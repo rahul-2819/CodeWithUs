@@ -28,7 +28,7 @@ async function fetchData(){
     const database = client.db('noob');
     const collection = database.collection('ques');
     const items = await collection.find({
-      _id:"Reverse Integer"
+     
     }).toArray();
     console.log('Items fetched');
     return items;
@@ -50,6 +50,7 @@ async function fetchData(){
       res.status(500).json({error:'Internal server error'});
     }
   });
+  // app.get()
 
 
 
