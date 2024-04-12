@@ -28,7 +28,7 @@ async function fetchData(){
     const database = client.db('noob');
     const collection = database.collection('ques');
     const items = await collection.find({
-      _id:"Reverse Integer"
+      _id:"Two Sum"
     }).toArray();
     console.log('Items fetched');
     return items;
@@ -53,37 +53,8 @@ async function fetchData(){
 
 
 
-// without using external api c++ execution
-// app.post('/exec_cpp', (req, res) => {
-//     const { code} = req.body;
-//     // if(lang === cpp){
-//         const fileName = "temp.cpp";
-//         const fs = require('fs');
-//         // console.log(code);
-//         try {
-//             fs.writeFileSync(fileName,code);
-//         } catch (error) {
-//             console.log('Error writing file', error);
-//             res.status(500).send('Error writing file');
-//             return;
-//         }
+  
 
-//         exec(`g++ -o temp ${fileName} && temp.exe`, (error, stdout, stderr) => {
-//             if (error) {
-//                 res.status(500).send(`Compilation error: ${error.message}`);
-//                 return;
-//             }
-//             if (stderr) {
-//                 res.status(500).send(`Execution error: ${stderr}`);
-//                 return;
-//             }
-//             res.send(stdout);
-//         });
-//     // }
-//     // else{
-//     //     res.status(400).json({error:"Unsupported language"});
-//     // }
-// });
 
 app.listen(port, () => {
     console.log(`Server started on port ${port}`);
