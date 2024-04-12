@@ -43,10 +43,10 @@ function CodeEditor() {
   return (
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-4">
-        <div>
-          <h1 className="text-3xl font-semibold">Online Code Compiler</h1>
-          <p className="text-gray-600">Choose a language and start coding!</p>
-        </div>
+        {/* <div>
+          <h1 className="text-3xl font-semibold"></h1>
+          <p className="text-gray-600"></p>
+        </div> */}
         <div className="flex items-center">
           <select
             className="border border-gray-400 px-4 py-2 rounded-md text-gray-800 hover:bg-gray-100 hover:border-gray-500 mr-4"
