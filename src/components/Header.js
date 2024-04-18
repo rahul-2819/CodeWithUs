@@ -8,7 +8,7 @@ import { auth } from "../firebase-config";
 const Header = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-
+  
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       console.log(user);
