@@ -6,7 +6,13 @@ import Potd from "./pages/Potd"
 import Layout from "./components/Layout";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ProblemSolve from "./pages/ProblemSolve";
+import Problems from "./pages/Problems";
 function App() {
+  
+
+   
+   
   return (
     <BrowserRouter>
     <Routes>
@@ -28,6 +34,16 @@ function App() {
           <Register/>
         </Layout>
       } />
+      <Route path = "/problems" element={
+      <Layout>
+      <Problems />
+      </Layout>
+      }
+      />
+      <Route path="/solve" element={
+        <Layout>
+      <ProblemSolve />
+      </Layout>}/>
     </Routes>
     </BrowserRouter>
   );
