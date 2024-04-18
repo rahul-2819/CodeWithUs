@@ -7,34 +7,52 @@ function ProblemSolve() {
   const [dailyProblem, setDailyProblem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [tags,setTags]=useState(false);
-  useEffect(() => {
-    const fetchData = async () => {
-        try {
-            let id = localStorage.getItem("CurrentQuestionId");
-            let cachedData = localStorage.getItem("cachedData");
-            let data;
+//   useEffect(() => {
+//     const fetchData = async () => {
+//         try {
+//             let id = localStorage.getItem("CurrentQuestionId");
+//             let cachedData = localStorage.getItem("cachedData");
+//             let data;
 
-            if (cachedData) {
-                data = JSON.parse(cachedData);
-            } else {
-                const response = await fetch("http://localhost:5000/api/data");
-                data = await response.json();
-                localStorage.setItem("cachedData", JSON.stringify(data));
-            }
+//             if (cachedData) {
+//                 data = JSON.parse(cachedData);
+//             } else {
+//                 const response = await fetch("http://localhost:5000/api/data");
+//                 data = await response.json();
+//                 localStorage.setItem("cachedData", JSON.stringify(data));
+//             }
 
-            console.log(data[id]);
-            setDailyProblem(data[id]);
-            console.log(dailyProblem);
-            setLoading(false);
-        } catch (error) {
-            console.error("Error fetching daily problem:", error);
-            // setLoading(false);
-        }
-    };
+//             console.log(data[id]);
+//             setDailyProblem(data[id]);
+//             console.log(dailyProblem);
+//             setLoading(false);
+//         } catch (error) {
+//             console.error("Error fetching daily problem:", error);
+//             // setLoading(false);
+//         }
+//     };
 
-    fetchData();
-}, []);
+//     fetchData();
+// }, []);
 
+const fetched = useCallback(async(id)=>{
+  await fetch("http://localhost:5000/api/data")
+  .then(response => response.json())
+  .then(data => {
+   setDailyProblem(data[id]);
+   console.log(dailyProblem);
+    setLoading(false);
+   
+  })
+  .catch(error => {
+    console.error("Error fetching daily problem:", error);
+    setLoading(false);
+  })
+})
+useEffect(()=>{
+  let id = localStorage.getItem("CurrentQuestionId");
+   fetched(id);
+},[]) 
 
   const addLike=()=>{
     alert('Liked');
