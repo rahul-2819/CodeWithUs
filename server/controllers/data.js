@@ -1,5 +1,6 @@
 const express = require("express")
 const {client} = require("../Connection")
+//get all the questions
 const findAllQuestions = async(req,res)=>{
     console.log("findAllQuestions request")
     try {
@@ -14,12 +15,14 @@ const findAllQuestions = async(req,res)=>{
         return [];
       } 
 }
+//get request for find the qeustion by id
 const findQuestionById = async(req,res)=>{
     try{
+        const id = req.body;
         const database = client.db('noob');
         const collection = database.collection("ques");
         const questions = await collection.find({
-            id:req.body.id,
+            _id:id,
         })
         const questionsArray = await questions.toArray();
         return questionsArray;
@@ -27,11 +30,10 @@ const findQuestionById = async(req,res)=>{
         return [];
     }
 }
+//Addlikes end point
 const Addlikes = async(req,res)=>{
     try{
         const {questionId,amount} = req.body;
-  
-        await client.connect();
         const database  =client.db('noob');
         const collection = database.collection('ques');
         
@@ -45,11 +47,10 @@ const Addlikes = async(req,res)=>{
         res.status(500).json({ error: 'Internal server error' });
       }
 }
+//Add dislike end point
 const AddDislike = async(req,res)=>{
     try{
         const {questionId,amount} = req.body;
-  
-        await client.connect();
         const database  =client.db('noob');
         const collection = database.collection('ques');
         

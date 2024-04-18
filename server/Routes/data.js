@@ -4,5 +4,5 @@ const router = express.Router();
 router.get("/data",findAllQuestions);
 router.get("/data/:id",findQuestionById);
 router.post("/likes",Addlikes);
-router.post("/dislike",AddDislike);
+router.post("/dislikes",AddDislike);
 module.exports = router;
