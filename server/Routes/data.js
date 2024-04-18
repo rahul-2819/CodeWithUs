@@ -1,6 +1,8 @@
 const express = require('express');
-const { findAllQuestions,findQuestionById} = require('../controllers/data');
+const { findAllQuestions,findQuestionById, Addlikes, AddDislike} = require('../controllers/data');
 const router = express.Router();
-router.get("/",findAllQuestions);
-router.get("/:id",findQuestionById)
+router.get("/data",findAllQuestions);
+router.get("/data/:id",findQuestionById);
+router.post("/likes",Addlikes);
+router.post("/dislike",AddDislike);
 module.exports = router;

@@ -27,8 +27,48 @@ const findQuestionById = async(req,res)=>{
         return [];
     }
 }
+const Addlikes = async(req,res)=>{
+    try{
+        const {questionId,amount} = req.body;
+  
+        await client.connect();
+        const database  =client.db('noob');
+        const collection = database.collection('ques');
+        
+        await collection.findOneAndUpdate(
+          {_id: questionId},
+          {$inc:{"likes":amount}}
+        )
+        res.json({success:true});
+      }catch(erorr){
+        console.error('Error updating likes:', erorr);
+        res.status(500).json({ error: 'Internal server error' });
+      }
+}
+const AddDislike = async(req,res)=>{
+    try{
+        const {questionId,amount} = req.body;
+  
+        await client.connect();
+        const database  =client.db('noob');
+        const collection = database.collection('ques');
+        
+        await collection.findOneAndUpdate(
+          {_id: questionId},
+          {$inc:{"dislikes":amount}}
+        )
+        res.json({success:true});
+      }catch(erorr){
+        console.error('Error updating likes:', erorr);
+        res.status(500).json({ error: 'Internal server error' });
+      }finally{
+        await client.close();
+      }
+}
 
 module.exports = {
     findAllQuestions,
     findQuestionById,
+    Addlikes,
+    AddDislike
 }

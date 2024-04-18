@@ -20,12 +20,72 @@ function Potd() {
       });
       // console.log(dailyProblem)
   }, []);
+  const [liked,setLiked]=useState(false);
+  const [disliked,setDisliked]=useState(false);
 
-  const addLike=()=>{
+  const addLike=(amount)=>{
     alert('Liked');
-  }
-  const addDislike=()=>{
+    setLiked(true);
+    setDailyProblem(prevState=>({
+      ...prevState,
+      likes: prevState.likes + amount
+    }));
+
+    // console.log(dailyProblem.likes);
+    updateLikes(dailyProblem.questionTitle,amount);
+
+  };
+  const addDislike=(amount)=>{
     alert('Disliked');
+    setDisliked(true);
+    setDailyProblem(prevState=>({
+      ...prevState,
+      dislikes: prevState.dislikes+amount
+    }));
+    // console.log(dailyProblem.dislikes);
+    updateDislikes(dailyProblem.questionTitle,amount);
+  };
+
+
+  const updateLikes=(id,amount)=>{
+    fetch("http://localhost:5000/api/likes", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        questionId: id,
+        amount:amount 
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log("Likes updated in the database:", data);
+    })
+    .catch(error => {
+      console.error("Error updating likes in the database:", error);
+    });
+  }
+
+  const updateDislikes=(id,amount)=>{
+    fetch("http://localhost:5000/api/dislikes", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        questionId: id,
+        amount:amount 
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log("Likes updated in the database:", data);
+    })
+    .catch(error => {
+      console.error("Error updating likes in the database:", error);
+    });
+
   }
 
   const toggleTag=()=>{
@@ -45,12 +105,34 @@ function Potd() {
             <div className="overflow-auto max-w-xl">
               <p className="text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{__html: dailyProblem.question}}></p>
               <div className="flex items-center mt-4">
-                <div className="flex items-center mr-4 cursor-pointer" onClick={addLike}>
-                  <FontAwesomeIcon className="text-green-400" icon={faThumbsUp}/>
+                <div className="flex items-center mr-4 cursor-pointer" onClick={()=>{
+                  if (!liked) {
+                    addLike(1);
+                    if (disliked) {
+                      addDislike(-1);
+                      setDisliked(false);
+                    }
+                  } else {
+                    addLike(-1);
+                    setLiked(false);
+                  }
+                }}>
+                  <FontAwesomeIcon className={` ${liked ? "text-green-700" : "opacity-50"}`} icon={faThumbsUp}/>
                   <span className="font-semibold ml-2">{dailyProblem.likes}</span>
                 </div>
-                <div className="flex items-center cursor-pointer" onClick={addDislike}>
-                  <FontAwesomeIcon className="text-red-400" icon={faThumbsDown}/>
+                <div className="flex items-center cursor-pointer" onClick={()=>{
+                  if (!disliked) {
+                    addDislike(1);
+                    if (liked) {
+                      addLike(-1);
+                      setLiked(false);
+                    }
+                  } else {
+                    addDislike(-1);
+                    setDisliked(false);
+                  }
+                }}>
+                  <FontAwesomeIcon className={` ${disliked ? "text-red-700" : "opacity-50"}`} icon={faThumbsDown}/>
                   <span className="font-semibold ml-2">{dailyProblem.dislikes}</span>
                 </div>
               </div>

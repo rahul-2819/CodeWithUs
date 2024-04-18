@@ -16,7 +16,9 @@ app.use((req,res,next)=>{
 app.use(bodyParser.json());
 
 
- app.use("/api/data",userRouter);
+ app.use("/api",userRouter);
+
+
 
 app.listen(port, () => {
     console.log(`Server started on port ${port}`);
