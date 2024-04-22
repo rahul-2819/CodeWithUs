@@ -4,10 +4,10 @@ import { Editor } from "@monaco-editor/react";
 function CodeEditor() {
   const [code, setCode] = useState("");
   const [lang, setLang] = useState("cpp");
-  const [res, setRes] = useState("");
-  
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const [res, setRes] = useState([]);
+  const [testCases,setTestCases] = useState(null)
+  const RunAndCheck = async(Input_data)=>{
+    console.log(Input_data);
     const url = 'https://onecompiler-apis.p.rapidapi.com/api/v1/run';
     const options = {
       method: 'POST',
@@ -18,7 +18,7 @@ function CodeEditor() {
       },
       body: JSON.stringify({
         language: lang,
-        stdin: '', // No input provided in this example
+        stdin: Input_data, // No input provided in this example
         files: [
           {
             name: `code.${lang}`,
@@ -30,10 +30,48 @@ function CodeEditor() {
     try {
       const response = await fetch(url, options);
       const result = await response.json();
-      setRes(result.stdout || result.stderr || "Unknown error occurred");
+      // console.log("res",result);
+      // setRes(result.stdout || result.stderr || "Unknown error occurred");
+      if(result.stdout){
+        return result.stdout;
+      }
+      alert("error");
+      return result.stderr||"Unknown error";
+      // return result.stdout;
     } catch (error) {
       setRes("Error" + error.message);
     }
+  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const id = localStorage.getItem("CurrentQuestionName");
+    console.log(id);
+    try {
+      const response = await fetch(`http://localhost:5000/api/testcases/${id}`);
+    const data = await response.json();
+    console.log(data.testCases);
+    setTestCases(data.testCases);
+    console.log(testCases);
+    } catch (error) {
+      console.log(error);
+    }
+    let answer = [];
+    for(let key in testCases){
+      // console.log(testCases[key].input_data)
+      const val = await RunAndCheck(testCases[key].input_data);
+      // console.log(val.json());
+      
+      if(val === testCases[key].expected_output){
+        console.log(1);
+        answer.push(true);
+      }
+      else{
+        console.log(0);
+        answer.push(false);
+      }
+    }
+    setRes(answer);
+   
   };
 
   useEffect(() => {
@@ -75,6 +113,9 @@ function CodeEditor() {
           onChange={(e) => setCode(e)}
         />
       </div>
+      {res !== null ? res.map((result)=>{
+        return <div>{result}</div>
+      }):""}
     </div>
   );
 }

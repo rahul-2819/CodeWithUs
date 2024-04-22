@@ -38,6 +38,7 @@ export default function Problems() {
             <td className="px-6 py-4 whitespace-nowrap " >{id + 1}</td>
             <td className="px-6 py-4 whitespace-nowrap hover:cursor-pointer" id = {id+1} onClick={(e)=>{
               localStorage.setItem("CurrentQuestionId",e.target.id-1);
+              localStorage.setItem("CurrentQuestionName",problem._id);
               alert(e.target.id);
               navigate("/solve")
               }}>{problem._id}</td>
