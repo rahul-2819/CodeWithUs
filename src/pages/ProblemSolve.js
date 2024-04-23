@@ -6,13 +6,17 @@ import Output from "../components/Output";
 import { useState } from "react";
 
 function ProblemSolve(){
-  const [output, setOutput] = useState([]); // State for output
+  const [output, setOutput] = useState([]); 
+  const [isLoading, setIsLoading] = useState(false); 
 
-  // Function to update the output state
   const updateOutput = (newOutput) => {
     setOutput(newOutput);
+    setIsLoading(false);
   };
 
+  const handleLoading = () => {
+    setIsLoading(true);
+  };
   return (
     <SplitPane 
     // className='bg-black'
@@ -47,8 +51,8 @@ function ProblemSolve(){
           height:'10px',
         }}
       >
-         <CodeEditor updateOutput={updateOutput} /> 
-         <Output res={output} />
+         <CodeEditor updateOutput={updateOutput} handleLoading={handleLoading} /> 
+         <Output res={output} isLoading={isLoading} />
       </SplitPane>
     </SplitPane>
   );
