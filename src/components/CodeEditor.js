@@ -7,149 +7,56 @@ function CodeEditor(props) {
   const [res, setRes] = useState([]);
   const [testCases, setTestCases] = useState(null);
 
-  // -------------------------Judge0 compiler Apli------------------------
-  const RunAndCheck = async (inputData, expectedOutput) => {
-    const url = 'https://judge0-extra-ce.p.rapidapi.com/submissions?base64_encoded=false&wait=true&fields=*';
-    const options = {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-  //       'X-RapidAPI-Key': '2e08084134msh96ecd1e3924992cp1a8095jsndeb224acd56d',
-          'X-RapidAPI-Key': 'ac40a57194msh43667a7c72d4d16p15d807jsn1542329103f9',
-        'X-RapidAPI-Host': 'judge0-extra-ce.p.rapidapi.com'
-      },
-      body: JSON.stringify({
-        language_id: 12,
-        source_code: code,
-        stdin: inputData
-      })
-    };
-
-    try {
-      const response = await fetch(url, options);
-      const result = await response.json();
-
-      
-      return result.stdout === expectedOutput
-    } catch (error) {
-      console.error(error);
-      return "Error";
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    props.handleLoading();
-    const id = localStorage.getItem("CurrentQuestionName");
-
-    try {
-      const response = await fetch(`http://localhost:5000/api/testcases/${id}`);
-      const data = await response.json();
-      setTestCases(data.testCases);
-    } catch (error) {
-      console.log(error);
-    }
-
-    let answer = [];
-    for (let key in testCases) {
-      const testCase = testCases[key];
-      const val = await RunAndCheck(testCase.input_data, testCase.expected_output);
-      answer.push(val);
-    }
-    setRes(answer);
-    props.updateOutput(answer);
-  };
-
-  const handleRun = async (e) => {
-    e.preventDefault();
-    props.handleLoading();
-    const id = localStorage.getItem("CurrentQuestionName");
-
-    try {
-      const response = await fetch(`http://localhost:5000/api/exampletestcases/${id}`);
-      const data = await response.json();
-      setTestCases(data.testCases);
-    } catch (error) {
-      console.log(error);
-    }
-
-    let answer = [];
-    for (let key in testCases) {
-      const testCase = testCases[key];
-      const val = await RunAndCheck(testCase.input_data, testCase.expected_output);
-      answer.push(val);
-    }
-    setRes(answer);
-    props.updateOutput(answer);
-  };
-
-  // const RunAndCheck = async (Input_data) => {
-  //   console.log(Input_data);
-  //   const url = "https://onecompiler-apis.p.rapidapi.com/api/v1/run";
+  // -------------------------Judge0 compiler Api------------------------
+  // const RunAndCheck = async (inputData, expectedOutput) => {
+  //   const url = 'https://judge0-extra-ce.p.rapidapi.com/submissions?base64_encoded=false&wait=true&fields=*';
   //   const options = {
-  //     method: "POST",
+  //     method: 'POST',
   //     headers: {
-  //       "content-type": "application/json",
-  //       "X-RapidAPI-Key": "ac40a57194msh43667a7c72d4d16p15d807jsn1542329103f9",
-  //       "X-RapidAPI-Host": "onecompiler-apis.p.rapidapi.com",
+  //       'content-type': 'application/json',
+  // //       'X-RapidAPI-Key': '2e08084134msh96ecd1e3924992cp1a8095jsndeb224acd56d',
+  //         'X-RapidAPI-Key': 'ac40a57194msh43667a7c72d4d16p15d807jsn1542329103f9',
+  //       'X-RapidAPI-Host': 'judge0-extra-ce.p.rapidapi.com'
   //     },
   //     body: JSON.stringify({
-  //       language: lang,
-  //       stdin: Input_data, // No input provided in this example
-  //       files: [
-  //         {
-  //           name: `code.${lang}`,
-  //           content: code,
-  //         },
-  //       ],
-  //     }),
+  //       language_id: 12,
+  //       source_code: code,
+  //       stdin: inputData
+  //     })
   //   };
+
   //   try {
   //     const response = await fetch(url, options);
   //     const result = await response.json();
-  //     console.log("res", result.stdout);
-  //     // setRes(result.stdout || result.stderr || "Unknown error occurred");
-  //     if (result.stdout) {
-  //       return result.stdout;
-  //     }
-  //     alert("error");
-  //     return result.stderr || "Unknown error";
-  //     // return result.stdout;
+
+      
+  //     return result.stdout === expectedOutput
   //   } catch (error) {
-  //     setRes("Error" + error.message);
-  //     props.updateOutput("Error" + error.message);
+  //     console.error(error);
+  //     return "Error";
   //   }
   // };
+
   // const handleSubmit = async (e) => {
   //   e.preventDefault();
   //   props.handleLoading();
   //   const id = localStorage.getItem("CurrentQuestionName");
-  //   console.log(id);
+
   //   try {
   //     const response = await fetch(`http://localhost:5000/api/testcases/${id}`);
   //     const data = await response.json();
-  //     console.log(data.testCases);
   //     setTestCases(data.testCases);
-  //     // console.log(testCases);
   //   } catch (error) {
   //     console.log(error);
   //   }
+
   //   let answer = [];
   //   for (let key in testCases) {
-  //     // console.log(testCases[key].input_data)
-  //     const val = await RunAndCheck(testCases[key].input_data);
-  //     console.log(val);
-
-  //     if (val === testCases[key].expected_output) {
-  //       console.log(1);
-  //       answer.push(true);
-  //     } else {
-  //       console.log(0);
-  //       answer.push(false);
-  //     }
+  //     const testCase = testCases[key];
+  //     const val = await RunAndCheck(testCase.input_data, testCase.expected_output);
+  //     answer.push(val);
   //   }
   //   setRes(answer);
-
   //   props.updateOutput(answer);
   // };
 
@@ -157,35 +64,130 @@ function CodeEditor(props) {
   //   e.preventDefault();
   //   props.handleLoading();
   //   const id = localStorage.getItem("CurrentQuestionName");
-  //   console.log(id);
+
   //   try {
   //     const response = await fetch(`http://localhost:5000/api/exampletestcases/${id}`);
   //     const data = await response.json();
-  //     console.log(data.testCases);
   //     setTestCases(data.testCases);
-  //     // console.log(testCases);
   //   } catch (error) {
   //     console.log(error);
   //   }
+
   //   let answer = [];
   //   for (let key in testCases) {
-  //     // console.log(testCases[key].input_data)
-  //     const val = await RunAndCheck(testCases[key].input_data);
-  //     console.log(val);
-
-  //     if (val === testCases[key].expected_output) {
-  //       console.log(1);
-  //       answer.push(true);
-  //     } else {
-  //       console.log(0);
-  //       answer.push(false);
-  //     }
+  //     const testCase = testCases[key];
+  //     const val = await RunAndCheck(testCase.input_data, testCase.expected_output);
+  //     answer.push(val);
   //   }
   //   setRes(answer);
-
-
   //   props.updateOutput(answer);
   // };
+
+  const RunAndCheck = async (Input_data) => {
+    console.log(Input_data);
+    const url = "https://onecompiler-apis.p.rapidapi.com/api/v1/run";
+    const options = {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "X-RapidAPI-Key": "ac40a57194msh43667a7c72d4d16p15d807jsn1542329103f9",
+        "X-RapidAPI-Host": "onecompiler-apis.p.rapidapi.com",
+      },
+      body: JSON.stringify({
+        language: lang,
+        stdin: Input_data, // No input provided in this example
+        files: [
+          {
+            name: `code.${lang}`,
+            content: code,
+          },
+        ],
+      }),
+    };
+    try {
+      const response = await fetch(url, options);
+      const result = await response.json();
+      console.log("res", result.stdout);
+      // setRes(result.stdout || result.stderr || "Unknown error occurred");
+      if (result.stdout) {
+        return result.stdout;
+      }else if (result.stderr){
+        alert("error");
+        return result.stderr || "Unknown error";
+
+      }
+    } catch (error) {
+      setRes("Error" + error.message);
+      props.updateOutput("Error" + error.message);
+    }
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    props.handleLoading();
+    const id = localStorage.getItem("CurrentQuestionName");
+    console.log(id);
+    try {
+      const response = await fetch(`http://localhost:5000/api/testcases/${id}`);
+      const data = await response.json();
+      console.log(data.testCases);
+      setTestCases(data.testCases);
+      props.setTc(data.testCases);
+      // console.log(testCases);
+    } catch (error) {
+      console.log(error);
+    }
+    let answer = [];
+    for (let key in testCases) {
+      // console.log(testCases[key].input_data)
+      const val = await RunAndCheck(testCases[key].input_data);
+      console.log(val);
+
+      if (val === testCases[key].expected_output) {
+        console.log(1);
+        answer.push(true);
+      } else {
+        console.log(0);
+        answer.push(false);
+      }
+    }
+    setRes(answer);
+
+    props.updateOutput(answer);
+  };
+
+  const handleRun = async (e) => {
+    e.preventDefault();
+    props.handleLoading();
+    const id = localStorage.getItem("CurrentQuestionName");
+    console.log(id);
+    try {
+      const response = await fetch(`http://localhost:5000/api/exampletestcases/${id}`);
+      const data = await response.json();
+      console.log(data.testCases);
+      setTestCases(data.testCases);
+      // console.log(testCases);
+    } catch (error) {
+      console.log(error);
+    }
+    let answer = [];
+    for (let key in testCases) {
+      // console.log(testCases[key].input_data)
+      const val = await RunAndCheck(testCases[key].input_data);
+      console.log(val);
+
+      if (val === testCases[key].expected_output) {
+        console.log(1);
+        answer.push(true);
+      } else {
+        console.log(0);
+        answer.push(false);
+      }
+    }
+    setRes(answer);
+
+
+    props.updateOutput(answer);
+  };
 
   useEffect(() => {
     // alert(res);

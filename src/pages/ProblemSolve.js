@@ -8,7 +8,7 @@ import { useState } from "react";
 function ProblemSolve(){
   const [output, setOutput] = useState([]); 
   const [isLoading, setIsLoading] = useState(false); 
-
+  const [tc,setTc] = useState([]);
   const updateOutput = (newOutput) => {
     setOutput(newOutput);
     setIsLoading(false);
@@ -51,8 +51,8 @@ function ProblemSolve(){
           height:'10px',
         }}
       >
-         <CodeEditor updateOutput={updateOutput} handleLoading={handleLoading} /> 
-         <Output res={output} isLoading={isLoading} />
+         <CodeEditor updateOutput={updateOutput} handleLoading={handleLoading} setTc={setTc} /> 
+         <Output res={output} isLoading={isLoading} tc={tc}/>
       </SplitPane>
     </SplitPane>
   );
