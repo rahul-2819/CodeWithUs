@@ -82,10 +82,27 @@ const getAllTestCases = async(req,res)=>{
     res.status(500).json({ error: 'Internal server error' });
   }
 }
+const getExampleTestCases = async(req,res)=>{
+  try{
+    const id = req.params.id;
+    const database = client.db("noob");
+    const collection = database.collection("example_testcases");
+    const data = await collection.findOne({
+      questionId:id,
+    });
+    // console.log(data);
+    return res.json(data);
+  }
+  catch(error){
+    // console.error('Error updating likes:', erorr);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
 module.exports = {
     findAllQuestions,
     findQuestionById,
     Addlikes,
     AddDislike,
-    getAllTestCases
+    getAllTestCases,
+    getExampleTestCases
 }
