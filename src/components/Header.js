@@ -65,7 +65,7 @@ const NavLink = ({ to, children }) => {
   return (
     <Link
       to={to}
-      className="text-gray-800  transition duration-300 hover:text-green-600 transform hover:scale-125"
+      className="text-gray-800  transition duration-300 hover:text-blue-600 transform hover:scale-105"
     >
       <div className="ml-4">{children}</div>
     </Link>
