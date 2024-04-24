@@ -39,7 +39,7 @@ export default function Login() {
           <input className='w-full px-4 py-3 border border-gray-300 rounded-md outline-none focus:border-blue-500 placeholder-gray-500' type="password" name="password" placeholder='Password' onChange={handleChange} required />
         </div>
         <div className='mb-6'>
-          <button type="submit" className='w-full bg-blue-500 text-white rounded-md py-3 hover:bg-blue-600 transition-colors duration-300 focus:outline-none'>Submit</button>
+          <button type="submit" className='w-full bg-blue-500 text-white rounded-md py-3 hover:bg-blue-600 transition-colors duration-300 focus:outline-none' onClick={handleSubmit} > Submit</button>
         </div>
         {error && 
           <div className='text-red-500 text-sm text-center mb-4 bg-red-100 px-4 py-2 rounded-lg'>
