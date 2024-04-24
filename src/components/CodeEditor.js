@@ -5,7 +5,6 @@ function CodeEditor(props) {
   const [code, setCode] = useState("");
   const [lang, setLang] = useState("cpp");
   const [res, setRes] = useState([]);
-  const [testCases, setTestCases] = useState(null);
 
   // -------------------------Judge0 compiler Api------------------------
   // const RunAndCheck = async (inputData, expectedOutput) => {
@@ -130,30 +129,36 @@ function CodeEditor(props) {
       const response = await fetch(`http://localhost:5000/api/testcases/${id}`);
       const data = await response.json();
       console.log(data.testCases);
-      setTestCases(data.testCases);
+      const testcases = data.testCases;
+      if(testcases !== null)
+          Execute(testcases);
       props.setTc(data.testCases);
       // console.log(testCases);
     } catch (error) {
       console.log(error);
     }
+  };
+  const Execute = async(testCases)=>{
     let answer = [];
     for (let key in testCases) {
       // console.log(testCases[key].input_data)
       const val = await RunAndCheck(testCases[key].input_data);
       console.log(val);
-
-      if (val === testCases[key].expected_output) {
+      let expected_output = val.replace(/\n|\r/g,'');
+      if (expected_output === testCases[key].expected_output) {
         console.log(1);
         answer.push(true);
+        
       } else {
         console.log(0);
         answer.push(false);
       }
+      
     }
     setRes(answer);
-
-    props.updateOutput(answer);
-  };
+      props.updateOutput(answer);
+   
+  }
 
   const handleRun = async (e) => {
     e.preventDefault();
@@ -164,29 +169,14 @@ function CodeEditor(props) {
       const response = await fetch(`http://localhost:5000/api/exampletestcases/${id}`);
       const data = await response.json();
       console.log(data.testCases);
-      setTestCases(data.testCases);
-      // console.log(testCases);
+      const testcases = data.testCases;
+      if(testcases !== null)
+          Execute(testcases);
+      props.setTc(data.testCases);
     } catch (error) {
       console.log(error);
     }
-    let answer = [];
-    for (let key in testCases) {
-      // console.log(testCases[key].input_data)
-      const val = await RunAndCheck(testCases[key].input_data);
-      console.log(val);
-
-      if (val === testCases[key].expected_output) {
-        console.log(1);
-        answer.push(true);
-      } else {
-        console.log(0);
-        answer.push(false);
-      }
-    }
-    setRes(answer);
-
-
-    props.updateOutput(answer);
+    
   };
 
   useEffect(() => {
@@ -208,7 +198,7 @@ function CodeEditor(props) {
           </select>
           <button
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            onClick={handleRun}
+            onClick={(e)=>{handleRun(e)}}
           >
             Run
           </button>
