@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Editor } from "@monaco-editor/react";
+import { auth } from "../firebase-config";
 
 function CodeEditor(props) {
   const [code, setCode] = useState("");
@@ -81,7 +82,7 @@ function CodeEditor(props) {
   //   setRes(answer);
   //   props.updateOutput(answer);
   // };
-
+  const user = auth.currentUser;
   const RunAndCheck = async (Input_data) => {
     console.log(Input_data);
     const url = "https://onecompiler-apis.p.rapidapi.com/api/v1/run";
@@ -122,6 +123,10 @@ function CodeEditor(props) {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if(!user){
+      alert('You need to login to test ur code');
+      return;
+    }
     props.handleLoading();
     const id = localStorage.getItem("CurrentQuestionName");
     console.log(id);
@@ -162,6 +167,10 @@ function CodeEditor(props) {
 
   const handleRun = async (e) => {
     e.preventDefault();
+    if(!user){
+      alert('You need to login to test ur code');
+      return;
+    }
     props.handleLoading();
     const id = localStorage.getItem("CurrentQuestionName");
     console.log(id);

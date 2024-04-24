@@ -81,17 +81,18 @@ function Discuss() {
       <div className="flex justify-center space-x-4 mb-4">
         {categories.map((category) => (
           <motion.div
-            key={category._id}
-            onClick={() => handleCategoryClick(category)}
-            className={`cursor-pointer border border-gray-500 px-4 py-2 rounded ${
-              selectedTab === category._id ? 'bg-blue-200 text-gray-800' : 'bg-gray-200 text-gray-800'
-            }`}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ duration: 0.2, ease: 'easeInOut' }}
-          >
-            {category.title}
-          </motion.div>
+          key={category._id}
+          onClick={() => handleCategoryClick(category)}
+          className={`cursor-pointer border border-gray-500 px-4 py-2 rounded ${
+            selectedTab === category._id ? 'bg-blue-200 text-gray-800' : 'bg-gray-200 text-gray-800'
+          }`}
+          whileHover={{ y: -5 }}
+          whileTap={{ y: 5 }}
+          transition={{ duration: 0.2, ease: 'easeInOut' }}
+        >
+          {category.title}
+        </motion.div>
+        
         ))}
         <button
           onClick={handleAddPost}
@@ -121,65 +122,71 @@ function Discuss() {
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
           <div className="bg-white rounded p-4 w-96">
             <h2 className="text-lg font-semibold mb-4">Add New Post</h2>
-            <form onSubmit={handleFormSubmit}>
-              <div className="mb-4">
-                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-                  Title
-                </label>
-                <input
-                  type="text"
-                  id="title"
-                  value={newPostTitle}
-                  onChange={(e) => setNewPostTitle(e.target.value)}
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
-                  Select Category
-                </label>
-                <select
-                  id="category"
-                  value={newPostCategory}
-                  onChange={(e) => setNewPostCategory(e.target.value)}
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="">Select Category</option>
-                  {categories.map((category) => (
-                    <option key={category._id} value={category.title}>
-                      {category.title}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="mb-4">
-                <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
-                  Content
-                </label>
-                <textarea
-                  id="content"
-                  value={newPostContent}
-                  onChange={(e) => setNewPostContent(e.target.value)}
-                  rows={4}
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                ></textarea>
-              </div>
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={handleModalClose}
-                  className="mr-2 px-4 py-2 border border-gray-300 rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 border border-transparent rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-                >
-                  Add Post
-                </button>
-              </div>
-            </form>
+            <form onSubmit={handleFormSubmit} className="max-w-md mx-auto">
+  <div className="mb-4">
+    <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+      Title
+    </label>
+    <input
+      type="text"
+      id="title"
+      value={newPostTitle}
+      onChange={(e) => setNewPostTitle(e.target.value)}
+      className="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+      placeholder="Enter title..."
+      required
+    />
+  </div>
+  <div className="mb-4">
+    <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+      Select Category
+    </label>
+    <select
+      id="category"
+      value={newPostCategory}
+      onChange={(e) => setNewPostCategory(e.target.value)}
+      className="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+      required
+    >
+      <option value="">Select Category</option>
+      {categories.map((category) => (
+        <option key={category._id} value={category.title}>
+          {category.title}
+        </option>
+      ))}
+    </select>
+  </div>
+  <div className="mb-4">
+    <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
+      Content
+    </label>
+    <textarea
+      id="content"
+      value={newPostContent}
+      onChange={(e) => setNewPostContent(e.target.value)}
+      rows={4}
+      className="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+      placeholder="Enter content..."
+      required
+    ></textarea>
+  </div>
+  <div className="flex justify-end">
+    <button
+      type="button"
+      onClick={handleModalClose}
+      className="mr-2 px-4 py-2 border border-gray-300 rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+    >
+      Cancel
+    </button>
+    <button
+      type="submit"
+      className="px-6 py-2 border border-transparent rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+    >
+      Add Post
+    </button>
+  </div>
+</form>
+
           </div>
         </div>
       )}
