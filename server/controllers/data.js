@@ -66,6 +66,7 @@ const AddDislike = async(req,res)=>{
         await client.close();
       }
 }
+//get all the test cases for a question
 const getAllTestCases = async(req,res)=>{
   try{
     const id = req.params.id;
@@ -82,6 +83,7 @@ const getAllTestCases = async(req,res)=>{
     res.status(500).json({ error: 'Internal server error' });
   }
 }
+//get example test cases
 const getExampleTestCases = async(req,res)=>{
   try{
     const id = req.params.id;
