@@ -1,5 +1,6 @@
 const express = require("express")
-const {client} = require("../Connection")
+const {client} = require("../Connection");
+const { ObjectId } = require("mongodb");
 
 //get all the questions
 const findAllQuestions = async(req,res)=>{
@@ -67,7 +68,7 @@ const AddDislike = async(req,res)=>{
         await client.close();
       }
 }
-//get all the test cases for a question
+
 const getAllTestCases = async(req,res)=>{
   try{
     const id = req.params.id;
@@ -84,7 +85,7 @@ const getAllTestCases = async(req,res)=>{
     res.status(500).json({ error: 'Internal server error' });
   }
 }
-//get example test cases
+
 const getExampleTestCases = async(req,res)=>{
   try{
     const id = req.params.id;
@@ -114,9 +115,10 @@ const addPost=async(req,res)=>{
     });
 
     if(category){
+      const postId = new ObjectId();
       await collection.updateOne(
         { title: categoryTitle },
-        { $push: { posts: { title: postTitle, content: postContent } }}
+        { $push: { posts: {_id:postId, title: postTitle, content: postContent } }}
       )
         res.json({success:true});
     }else{
@@ -131,13 +133,33 @@ const addPost=async(req,res)=>{
 
 //endpoint to get posts
 
-const getPost = async(req,res)=>{
+const getPost = async (req, res) => {
   try {
     const database = client.db("noob");
     const collection = database.collection('post');
-    const items = await collection.find({}).toArray();
 
-    return res.json(items);
+    const postId = req.query.postId; // get the postId from the request query
+    const selectedTab = req.query.selectedTab; // get the selectedTab from the request query
+    let item;
+    if(postId && selectedTab){
+      let filter = {
+        _id: new ObjectId(selectedTab)
+      };
+
+      let projection = {
+        posts: {
+          $elemMatch: {
+            _id: new ObjectId(postId)
+          }
+        }
+      };
+      item = await collection.findOne(filter, { projection });
+    }else {
+      item = await collection.find({}).toArray();
+    }
+
+    // item = await collection.findOne(filter, { projection });
+    return res.json(item);
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }

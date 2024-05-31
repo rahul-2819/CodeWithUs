@@ -9,6 +9,7 @@ import Register from "./pages/Register";
 import ProblemSolve from "./pages/ProblemSolve";
 import Problems from "./pages/Problems";
 import Discuss from "./pages/Discuss";
+import DisplayPost from "./pages/DisplayPost";
 function App() {
   
 
@@ -44,11 +45,18 @@ function App() {
       <Route path="/solve" element={
         <Layout>
       <ProblemSolve />
-      </Layout>}/>
+      </Layout>}
+      />
       <Route path="/discuss" element={
         <Layout>
           <Discuss/>
-      </Layout>}/>
+      </Layout>}
+      />
+      <Route path="/post" element={
+        <Layout>
+          <DisplayPost/>
+      </Layout>}
+      />
     </Routes>
     </BrowserRouter>
   );
