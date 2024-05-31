@@ -1,6 +1,7 @@
 import React, {useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { auth } from '../firebase-config';
+import { useNavigate } from 'react-router-dom';
 
 function Discuss() {
   const [categories, setCategories] = useState([]);
@@ -10,6 +11,8 @@ function Discuss() {
   const [newPostCategory, setNewPostCategory] = useState('');
   const [newPostContent, setNewPostContent] = useState('');
   const user = auth.currentUser;
+  const nav = useNavigate();
+
 
   useEffect(() => {
     fetch('http://localhost:5000/api/getpost')
@@ -26,8 +29,11 @@ function Discuss() {
     setSelectedTab(category._id);
   };
 
-  const handlePostClick = (postId) => {
-    window.location.href = `/post/${postId}`;
+  const handlePostClick = (postId,selectedTab) => {
+    alert(selectedTab)
+    localStorage.setItem('postId', postId);
+    localStorage.setItem('selectedTab', selectedTab);
+    nav('/post');
   };
 
   const handleAddPost = () => {
@@ -71,6 +77,7 @@ function Discuss() {
         setNewPostContent('');
         // Close the modal
         setShowModal(false);
+        window.location.reload();
       }else alert('Failed to submit post');
     })
     .catch((error)=> console.error('Error submitting ',error));
@@ -108,7 +115,7 @@ function Discuss() {
             <h3 className="text-lg font-semibold mb-2">{post.title}</h3>
             <p className="text-gray-700 mb-2">{post.content.substring(0, 100)}...</p>
             <button
-              onClick={() => handlePostClick(post._id)}
+              onClick={() => handlePostClick(post._id,selectedTab)}
               className="text-blue-500 hover:underline focus:outline-none transition duration-300 ease-in-out transform hover:scale-105"
             >
               Read More
@@ -118,6 +125,7 @@ function Discuss() {
       </div>
 
       {/* Modal for adding a new post */}
+
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
           <div className="bg-white rounded p-4 w-96">
