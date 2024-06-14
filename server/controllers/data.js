@@ -165,6 +165,55 @@ const getPost = async (req, res) => {
   }
 }
 
+const addComment = async (req, res) => {
+  try {
+    const database = client.db("noob");
+    const collection = database.collection("post_comments");
+    const { postId, content, author, createdAt } = req.body;
+
+    const newComment = {
+      content,
+      author,
+      createdAt: new Date(createdAt),
+    };
+
+    const result = await collection.updateOne(
+      { _id: new ObjectId(postId) },
+      { $push: { comments: newComment } },
+      { upsert: true }
+    );
+
+    if (result.modifiedCount === 0 && result.upsertedCount === 0) {
+      res.status(500).send({ error: 'An error occurred while adding the comment' });
+    } else {
+      res.status(200).send(newComment);
+    }
+  } catch (error) {
+    console.error('Error adding comment:', error);
+    res.status(500).send({ error: 'An error occurred while adding the comment' });
+  }
+};
+
+
+const getComment = async (req, res) => {
+  try {
+    const database = client.db("noob");
+    const collection = database.collection("post_comments");
+
+    const { postId } = req.query;
+
+    const post = await collection.findOne({ _id: new ObjectId(postId) });
+    if (post && post.comments) {
+      res.status(200).send({ comments: post.comments });
+    } else {
+      res.status(404).send({ comments: [] });
+    }
+  } catch (error) {
+    console.error('Error fetching comments:', error);
+    res.status(500).send({ error: 'An error occurred while fetching comments' });
+  }
+};
+
 module.exports = {
     findAllQuestions,
     findQuestionById,
@@ -173,5 +222,7 @@ module.exports = {
     getAllTestCases,
     getExampleTestCases,
     addPost,
-    getPost
+    getPost,
+    addComment,
+    getComment
 }
