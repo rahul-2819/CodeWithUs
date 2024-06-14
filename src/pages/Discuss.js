@@ -30,7 +30,7 @@ function Discuss() {
   };
 
   const handlePostClick = (postId,selectedTab) => {
-    alert(selectedTab)
+    alert(postId)
     localStorage.setItem('postId', postId);
     localStorage.setItem('selectedTab', selectedTab);
     nav('/post');
