@@ -4,6 +4,8 @@ import SplitPane from 'react-split-pane';
 import CodeEditor from '../components/CodeEditor';
 import Output from "../components/Output";
 import { useState } from "react";
+import Submissions from "../components/Submissions";
+import TabSelectQuestionDesc from "../components/TabSelectQuestionDesc";
 
 function ProblemSolve(){
   const [output, setOutput] = useState([]); 
@@ -35,7 +37,15 @@ function ProblemSolve(){
       
   }}
   >
-      <QuestionDesc  />
+      
+        {/* <QuestionDesc  />
+         */}
+         <TabSelectQuestionDesc/>
+        
+        {/* <Submissions /> */}
+        
+      
+      
       <SplitPane
         split="horizontal"
         minSize={100}

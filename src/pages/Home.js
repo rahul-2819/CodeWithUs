@@ -8,16 +8,16 @@ export default function Home() {
          
        </div>
        <div className='w-[70%]  m-2 flex flex-col h-auto'>
-        <div className='bg-blue-50 m-2 br-lg h-[10vh] rounded-lg flex item-center justify-center'>
+        <div className='bg-blue-50 m-2 br-lg h-[10vh] rounded-lg flex items-center justify-center'>
           Weekly Contest 001
         </div>
-        <div className='bg-blue-50 m-2 br-lg h-[10vh] rounded-lg flex item-center justify-center'>
+        <div className='bg-blue-50 m-2 br-lg h-[10vh] rounded-lg flex items-center justify-center'>
           Weekly Contest 002
         </div>
-        <div className='bg-blue-50 m-2 br-lg h-[10vh] rounded-lg flex item-center justify-center'>
+        <div className='bg-blue-50 m-2 br-lg h-[10vh] rounded-lg flex items-center justify-center'>
           Weekly Contest 002
         </div>
-        <div className='bg-blue-50 m-2 br-lg h-[10vh] rounded-lg flex item-center justify-center'>
+        <div className='bg-blue-50 m-2 br-lg h-[10vh] rounded-lg flex items-center justify-center'>
           Weekly Contest 002
         </div>
          
