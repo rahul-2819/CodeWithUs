@@ -10,6 +10,7 @@ import ProblemSolve from "./pages/ProblemSolve";
 import Problems from "./pages/Problems";
 import Discuss from "./pages/Discuss";
 import DisplayPost from "./pages/DisplayPost";
+import ProfilePage from "./pages/ProfilePage";
 function App() {
   
 
@@ -56,6 +57,13 @@ function App() {
         <Layout>
           <DisplayPost/>
       </Layout>}
+      />
+      <Route path="/profilePage"
+           element={
+            <Layout>
+              <ProfilePage/>
+            </Layout>
+           }
       />
     </Routes>
     </BrowserRouter>

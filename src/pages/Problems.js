@@ -18,7 +18,13 @@ export default function Problems() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+ const GetBg =(difficulty)=>{
+  console.log("callled");
+    if(difficulty === "Easy") return 'bg-green-100';
+    else if(difficulty === "Medium" ) return 'bg-yellow-100';
 
+    return 'bg-red-100';
+  }
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200">
@@ -31,14 +37,21 @@ export default function Problems() {
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {problems.map((problem, index) => (
-            <tr key={index} className="hover:bg-gray-100 cursor-pointer" onClick={() => {
+            <tr key={index} className="hover:bg-gray-100 cursor-pointer bg-blue-50 m-2 br-lg h-[10vh] rounded-lg" onClick={() => {
               localStorage.setItem("CurrentQuestionId", index);
               localStorage.setItem("CurrentQuestionName", problem._id);
               navigate("/solve");
             }}>
+               
               <td className="px-6 py-4 whitespace-nowrap">{index + 1}</td>
               <td className="px-6 py-4 whitespace-nowrap">{problem._id}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{problem.difficulty}</td>
+              <td className="px-6 py-4 whitespace-nowrap ">
+                 <button className={`rounded-xl ${GetBg(problem.difficulty)} p-2`}>
+                 {problem.difficulty}
+                 </button>
+
+              </td>
+             
             </tr>
           ))}
         </tbody>
