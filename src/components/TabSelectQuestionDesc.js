@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import QuestionDesc from './QuestionDesc'
 import Submissions from './Submissions'
+import QuesDiscuss from './QuesDiscuss';
 
 export default function TabSelectQuestionDesc() {
     const [currentElement,setCurrentElement] = useState("Description");
@@ -30,6 +31,9 @@ export default function TabSelectQuestionDesc() {
     </div>
     <div className={currentElement === "Description"?"":"hidden"}>
         <QuestionDesc/>
+    </div>
+    <div className={currentElement === "Discuss"?"":"hidden"}>
+        <QuesDiscuss/>
     </div>
     <div className={currentElement === "Submission"?"":"hidden"}>
       <Submissions/>
