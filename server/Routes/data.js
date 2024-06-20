@@ -1,5 +1,6 @@
 const express = require('express');
-const { findAllQuestions,findQuestionById, Addlikes, AddDislike, getAllTestCases,getExampleTestCases,addPost,getPost, addComment, getComment} = require('../controllers/data');
+const { findAllQuestions,findQuestionById, Addlikes, AddDislike, getAllTestCases,getExampleTestCases,addPost,getPost, addComment, getComment,addQuesComment,addQuesReply, getQuesComments} = require('../controllers/data');
+
 const router = express.Router();
 //find all questions
 router.get("/data",findAllQuestions);
@@ -21,4 +22,11 @@ router.get("/getpost", getPost);
 router.post("/addcomment",addComment);
 //get the comment of the post
 router.get("/getcomment",getComment);
-module.exports = router;
+// to add comments on a question
+router.post("/quescomment",addQuesComment);
+// to add replies to a comment on ques
+router.post("/quescommentreply",addQuesReply);
+// to get comments of a question
+router.get("/getquescomment",getQuesComments);
+
+module.exports = router; 

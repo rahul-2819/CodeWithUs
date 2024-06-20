@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { auth } from '../firebase-config';
+import axios from 'axios';
 
 function Comment({ comment, onReply }) {
     const [replyText, setReplyText] = useState('');
@@ -7,15 +9,15 @@ function Comment({ comment, onReply }) {
 
     const handleReplyChange = (e) => {
         setReplyText(e.target.value);
-    }
+    };
 
     const handleReplySubmit = () => {
         if (replyText.trim()) {
-            onReply(comment.id, replyText);
+            onReply(comment._id, replyText);
             setReplyText('');
             setShowReply(false);
         }
-    }
+    };
 
     return (
         <div style={{ marginLeft: comment.parentId ? '20px' : '0', border: '1px solid #ccc', padding: '10px', borderRadius: '5px', marginBottom: '10px', backgroundColor: '#f9f9f9' }}>
@@ -45,56 +47,115 @@ function Comment({ comment, onReply }) {
                 </div>
             )}
             {showReplies && comment.replies && comment.replies.map(reply => (
-                <Comment key={reply.id} comment={reply} onReply={onReply} />
+                <Comment key={reply._id} comment={reply} onReply={onReply} />
             ))}
         </div>
     );
 }
 
-function QuesDiscuss({ questionId }) {
-
+function QuesDiscuss() {
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
+    const user = auth.currentUser;
+    const questionId = localStorage.getItem('CurrentQuestionName');
+    // alert(questionId);
+
+    useEffect(()=>{
+        fetchComments();
+    })
+
+    const fetchComments= async()=>{
+        try {
+            const response = await fetch(`http://localhost:5000/api/getquescomment?questionId=${questionId}`);
+            const data = await response.json();
+
+            if(data.success){
+                setComments(data.comments);
+                
+            }else{
+                console.error("Failed to fetch comments");
+            }
+        } catch (error) {
+            console.error("There was an error fetching the comments!", error);
+        }
+    }
 
     const handleCommentChange = (event) => {
         setNewComment(event.target.value);
-    }
+    };
 
     const handleCommentSubmit = () => {
-        if (newComment.trim()) {
-            const commentData = { id: comments.length + 1, text: newComment, parentId: null, replies: [] };
-            setComments([...comments, commentData]);
-            setNewComment('');
+        if (user) {
+            if (newComment.trim()) {
+                const commentData = { questionId, text: newComment, parentId: null, userId: user.uid };
+                fetch('http://localhost:5000/api/quescomment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(commentData),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        setComments([...comments, { _id: data.commentId, text: newComment, parentId: null, userId: user.uid, replies: [] }]);
+                        setNewComment('');
+                    } else {
+                        console.error('Error:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('There was an error posting the comment:', error);
+                });
+            }
+        } else {
+            alert('Please login to post a comment');
         }
-    }
+    };
 
     const handleReplySubmit = (parentId, text) => {
-        const newReply = { id: comments.length + 1 + Math.random(), text, parentId, replies: [] };
-        setComments(updateCommentsWithReply(comments, newReply));
-    }
-
-    const updateCommentsWithReply = (comments, newReply) => {
-    // Map through the current comments array
-    return comments.map(comment => {
-        // Check if this comment is the parent comment
-        if (comment.id === newReply.parentId) {
-            // If it is, return a new comment object with the new reply added to the replies array
-            return {
-                ...comment,
-                replies: [...(comment.replies || []), newReply]
-            };
-        // If this comment has replies, recursively call the function on the replies
-        } else if (comment.replies) {
-            return {
-                ...comment,
-                replies: updateCommentsWithReply(comment.replies, newReply)
-            };
-        // If this comment is not the parent and has no replies, return it unchanged
+        if (user) {
+          const replyData = { questionId, text, parentId, userId: user.uid };
+          fetch('http://localhost:5000/api/quescommentreply', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(replyData),
+          })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                setComments(updateCommentsWithReply(comments, data.reply));
+              } else {
+                console.error('Error:', data.error);
+              }
+            })
+            .catch(error => {
+              console.error('There was an error posting the reply:', error);
+            });
         } else {
-            return comment;
+          alert('Please login to reply');
         }
-    });
-}
+      };
+    
+      const updateCommentsWithReply = (comments, newReply) => {
+        return comments.map(comment => {
+          if (comment._id === newReply.parentId) {
+            return {
+              ...comment,
+              replies: [...(comment.replies || []), newReply],
+            };
+          } else if (comment.replies) {
+            return {
+              ...comment,
+              replies: updateCommentsWithReply(comment.replies, newReply),
+            };
+          } else {
+            return comment;
+          }
+        });
+      };
 
     return (
         <div>
@@ -117,7 +178,7 @@ function QuesDiscuss({ questionId }) {
             </div>
             <div>
                 {comments.map(comment => (
-                    <Comment key={comment.id} comment={comment} onReply={handleReplySubmit} />
+                    <Comment key={comment._id} comment={comment} onReply={handleReplySubmit} />
                 ))}
             </div>
         </div>
