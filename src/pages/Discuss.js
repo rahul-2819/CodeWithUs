@@ -30,7 +30,7 @@ function Discuss() {
   };
 
   const handlePostClick = (postId,selectedTab) => {
-    alert(postId)
+    alert(postId);
     localStorage.setItem('postId', postId);
     localStorage.setItem('selectedTab', selectedTab);
     nav('/post');
@@ -46,42 +46,49 @@ function Discuss() {
     setShowModal(false);
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    // Add logic to handle form submission
-    console.log('New Post Title:', newPostTitle);
-    console.log('New Post Category:', newPostCategory);
-    console.log('New Post Content:', newPostContent);
-
+  
     const postData = {
       categoryTitle: newPostCategory,
       postTitle: newPostTitle,
       postContent: newPostContent,
-    }
-    fetch('http://localhost:5000/api/addpost' ,{
-      method:'POST',
-      headers:{
-        'Content-Type' :'application/json',
-      },
-      body: JSON.stringify(postData),
-    })
-    .then((response)=> response.json())
-    .then((data)=>{
-      if(data.success){
-        alert('post has been added');
-
-        
-         // Reset form fields
+    };
+  
+    try {
+      const response = await fetch('http://localhost:5000/api/addpost', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(postData),
+      });
+  
+      const data = await response.json();
+  
+      if (data.success) {
+        alert('Post has been added successfully.');
+  
+        // Reset form fields
         setNewPostTitle('');
         setNewPostCategory('');
         setNewPostContent('');
-        // Close the modal
+  
+        // Close the modal (if needed)
         setShowModal(false);
-        window.location.reload();
-      }else alert('Failed to submit post');
-    })
-    .catch((error)=> console.error('Error submitting ',error));
+  
+        // Optionally, reload the page to reflect the updated data
+        // window.location.reload();
+  
+      } else {
+        alert('Failed to submit post.');
+      }
+    } catch (error) {
+      console.error('Error submitting post:', error);
+      alert('Failed to submit post. Please try again later.');
+    }
   };
+  
 
   return (
     <div className="container mx-auto p-4">

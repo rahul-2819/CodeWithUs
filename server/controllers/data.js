@@ -109,7 +109,7 @@ const addPost=async(req,res)=>{
     const {categoryTitle, postTitle, postContent} = req.body;
     const database = client.db('noob');
     const collection = database.collection('post');
-    const category = collection.findOne({
+    const category = await collection.findOne({
       title: categoryTitle
     });
 
@@ -139,10 +139,11 @@ const getPost = async (req, res) => {
 
     const postId = req.query.postId; // get the postId from the request query
     const selectedTab = req.query.selectedTab; // get the selectedTab from the request query
+    // console.log(postId);
     let item;
     if(postId && selectedTab){
       let filter = {
-        _id: new ObjectId(selectedTab)
+        _id: selectedTab
       };
 
       let projection = {
@@ -163,53 +164,104 @@ const getPost = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 }
-
+// endpoint to add comments on a post
 const addComment = async (req, res) => {
   try {
-    const database = client.db("noob");
-    const collection = database.collection("post_comments");
-    const { postId, content, author, createdAt } = req.body;
+    const { postId, text, userId } = req.body;
+    const database = client.db('noob');
+    const collection = database.collection('post_comments');
 
     const newComment = {
-      content,
-      author,
-      createdAt: new Date(createdAt),
+      _id: new ObjectId(), // Generate new ObjectId for the comment
+      text,
+      userId,
+      createdAt: new Date(), // Add current timestamp for createdAt
+      replies: [] // Initialize replies array for nested comments if needed
     };
 
-    const result = await collection.updateOne(
+    const updateResult = await collection.updateOne(
       { _id: new ObjectId(postId) },
       { $push: { comments: newComment } },
-      { upsert: true }
+      { upsert: true } // Creates a new document if no matching document found
     );
 
-    if (result.modifiedCount === 0 && result.upsertedCount === 0) {
-      res.status(500).send({ error: 'An error occurred while adding the comment' });
+    if (updateResult.upsertedCount > 0) {
+      // New document created
+      res.status(200).json({ success: true, commentId: newComment._id, message: 'New comment added' });
+    } else if (updateResult.matchedCount > 0) {
+      // Existing document updated
+      res.status(200).json({ success: true, commentId: newComment._id, message: 'Comment added to existing document' });
     } else {
-      res.status(200).send(newComment);
+      res.status(404).json({ success: false, error: 'No comments found and no new document created' });
     }
   } catch (error) {
     console.error('Error adding comment:', error);
-    res.status(500).send({ error: 'An error occurred while adding the comment' });
+    res.status(500).json({ success: false, error: 'Internal server error' });
   }
 };
 
+// endpoint to reply on a comment on a post
+const addCommentReply = async (req, res) => {
+  try {
+    const { postId, parentId, text, userId } = req.body;
+    const database = client.db('noob');
+    const collection = database.collection('post_comments');
 
+    const post_comments = await collection.findOne({ _id: new ObjectId(postId) });
+
+    if (post_comments) {
+      const replyId = new ObjectId();
+      const newReply = { _id: replyId, text, parentId: new ObjectId(parentId), userId, replies: [] };
+
+      const addReplyToComment = (comments, parentId, reply) => {
+        for (let comment of comments) {
+          if (comment._id.equals(parentId)) {
+            comment.replies.push(reply);
+            return true;
+          } else if (comment.replies && comment.replies.length > 0) {
+            if (addReplyToComment(comment.replies, parentId, reply)) {
+              return true;
+            }
+          }
+        }
+        return false;
+      };
+
+      if (addReplyToComment(post_comments.comments, new ObjectId(parentId), newReply)) {
+        await collection.updateOne(
+          { _id: new ObjectId(postId) },
+          { $set: { comments: post_comments.comments } }
+        );
+        res.json({ success: true, reply: newReply });
+      } else {
+        res.status(404).json({ error: 'Parent comment not found' });
+      }
+    } else {
+      res.status(404).json({ error: 'Post not found' });
+    }
+  } catch (error) {
+    console.error('Error adding comment reply:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+// endpoint to get all comment of a post
 const getComment = async (req, res) => {
   try {
-    const database = client.db("noob");
-    const collection = database.collection("post_comments");
+    const postId = req.query.postId;
+    const database = client.db('noob');
+    const collection = database.collection('post_comments');
 
-    const { postId } = req.query;
+    const post_comments = await collection.findOne({ _id: new ObjectId(postId) });
 
-    const post = await collection.findOne({ _id: new ObjectId(postId) });
-    if (post && post.comments) {
-      res.status(200).send({ comments: post.comments });
+    if (post_comments) {
+      res.json({ success: true, comments: post_comments.comments });
     } else {
-      res.status(404).send({ comments: [] });
+      res.status(404).json({ error: 'No comments found for this post' });
     }
   } catch (error) {
     console.error('Error fetching comments:', error);
-    res.status(500).send({ error: 'An error occurred while fetching comments' });
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -317,6 +369,7 @@ module.exports = {
     addPost,
     getPost,
     addComment,
+    addCommentReply,
     getComment,
     addQuesComment,
     addQuesReply,
