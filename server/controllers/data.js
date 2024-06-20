@@ -1,4 +1,3 @@
-const express = require("express")
 const {client} = require("../Connection");
 const { ObjectId } = require("mongodb");
 
@@ -214,6 +213,100 @@ const getComment = async (req, res) => {
   }
 };
 
+
+const addQuesComment = async (req, res) => {
+  try {
+    const { questionId, text, userId } = req.body;
+    const database = client.db('noob');
+    const collection = database.collection('ques_comments');
+
+    const commentId = new ObjectId();
+    const updateResult = await collection.updateOne(
+      { questionId },
+      {
+        $push: { comments: { _id: commentId, text, parentId: null, userId, replies: [] } }
+      },
+      { upsert: true } // This option creates a new document if no document matches the query
+    );
+
+    if (updateResult.upsertedCount > 0) {
+      // New document created
+      res.json({ success: true, commentId, message: 'New document created and comment added' });
+    } else if (updateResult.matchedCount > 0) {
+      // Existing document updated
+      res.json({ success: true, commentId, message: 'Comment added to existing document' });
+    } else {
+      res.status(404).json({ success: false, error: 'No comments found and no new document created' });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+};
+
+
+
+const addQuesReply = async (req, res) => {
+  try {
+    const { questionId, text, parentId, userId } = req.body;
+    const database = client.db('noob');
+    const collection = database.collection('ques_comments');
+
+    const ques_comments = await collection.findOne({ questionId });
+
+    if (ques_comments) {
+      const replyId = new ObjectId();
+      const newReply = { _id: replyId, text, parentId, userId, replies: [] };
+
+      const addReplyToComment = (comments, parentId, reply) => {
+        for (let comment of comments) {
+          if (comment._id.equals(parentId)) {
+            comment.replies.push(reply);
+            return true;
+          } else if (comment.replies && comment.replies.length > 0) {
+            if (addReplyToComment(comment.replies, parentId, reply)) {
+              return true;
+            }
+          }
+        }
+        return false;
+      };
+
+      if (addReplyToComment(ques_comments.comments, new ObjectId(parentId), newReply)) {
+        await collection.updateOne(
+          { questionId },
+          { $set: { comments: ques_comments.comments } }
+        );
+        res.json({ success: true, reply: newReply });
+      } else {
+        res.status(404).json({ error: 'Parent comment not found' });
+      }
+    } else {
+      res.status(404).json({ error: 'Question not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+const getQuesComments = async(req,res)=>{
+  try {
+    const questionId = req.query.questionId;
+    console.log(questionId);
+    const database = client.db('noob');
+    const collection = database.collection('ques_comments');
+
+    const ques_comments = await collection.findOne({questionId : questionId});
+    if (ques_comments) {
+      res.json({ success: true, comments: ques_comments.comments });
+    } else {
+        res.status(404).json({ error: 'No comments found for this question' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+
 module.exports = {
     findAllQuestions,
     findQuestionById,
@@ -224,5 +317,8 @@ module.exports = {
     addPost,
     getPost,
     addComment,
-    getComment
+    getComment,
+    addQuesComment,
+    addQuesReply,
+    getQuesComments
 }
