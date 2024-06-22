@@ -343,7 +343,7 @@ const addQuesReply = async (req, res) => {
 const getQuesComments = async(req,res)=>{
   try {
     const questionId = req.query.questionId;
-    console.log(questionId);
+    // console.log(questionId);
     const database = client.db('noob');
     const collection = database.collection('ques_comments');
 

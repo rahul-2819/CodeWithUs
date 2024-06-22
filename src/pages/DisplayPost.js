@@ -202,7 +202,7 @@ function DisplayPostWithComments() {
                     </button>
                 </div>
                 <div>
-                    {comments.map(comment => (
+                    { comments && comments.map(comment => (
                         <Comment key={comment._id} comment={comment} onReply={handleReplySubmit} />
                     ))}
                 </div>
