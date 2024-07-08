@@ -5,11 +5,10 @@ const Footer = () => {
   return (
     <>
       <Wrapper>
-        <hr className="--color-dark" />
-        <div className="--flex-center --py2 --bg-grey py-5 flex items-center justify-center">
+        <hr className="border-gray-600" />
+        <div className="bg-gray-800 py-2 --flex-center flex items-center justify-center text-gray-400">
           <p>All Rights Reserved. &copy; 2024</p>
         </div>
-        
       </Wrapper>
     </>
   );

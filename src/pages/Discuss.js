@@ -7,7 +7,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTimes, faComments } from '@fortawesome/free-solid-svg-icons';
 
 function Discuss() {
-
   const [categories, setCategories] = useState([]);
   const [selectedTab, setSelectedTab] = useState(0);
   const [showModal, setShowModal] = useState(false);
@@ -23,7 +22,7 @@ function Discuss() {
       .then((response) => response.json())
       .then((data) => {
         setCategories(data);
-        setSelectedTab(data[0]._id);
+        setSelectedTab(data[0]?._id || 0);
         setLoading(false);
       })
       .catch((error) => {
@@ -45,7 +44,9 @@ function Discuss() {
   const handleAddPost = () => {
     if (user) {
       setShowModal(true);
-    } else alert('You need to login to add a post');
+    } else {
+      alert('You need to login to add a post');
+    }
   };
 
   const handleModalClose = () => {
@@ -87,10 +88,9 @@ function Discuss() {
     }
   };
 
-
   return (
-    <div className="container mx-auto p-8 bg-gray-100 min-h-screen">
-      <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">Discussion Forum</h1>
+    <div className="container mx-auto p-8 bg-gray-900 min-h-screen">
+      <h1 className="text-4xl font-bold text-center mb-8 text-white">Discussion Forum</h1>
       <div className="flex justify-center space-x-4 mb-8">
         {loading ? (
           <div className="flex justify-center items-center w-full h-64">
@@ -104,8 +104,8 @@ function Discuss() {
                 onClick={() => handleCategoryClick(category)}
                 className={`cursor-pointer px-6 py-3 rounded-full shadow-md transition-all duration-300 ${
                   selectedTab === category._id
-                    ? 'bg-indigo-600 text-white'
-                    : 'bg-white text-gray-800 hover:bg-indigo-100'
+                    ? 'bg-indigo-700 text-white'
+                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
                 }`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -115,7 +115,7 @@ function Discuss() {
             ))}
             <motion.button
               onClick={handleAddPost}
-              className="cursor-pointer px-6 py-3 rounded-full bg-green-500 text-white shadow-md hover:bg-green-600 transition-all duration-300"
+              className="cursor-pointer px-6 py-3 rounded-full bg-green-600 text-white shadow-md hover:bg-green-700 transition-all duration-300"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -126,7 +126,7 @@ function Discuss() {
         )}
       </div>
       <div>
-        <h2 className="text-3xl font-semibold text-center mb-8 text-gray-700">
+        <h2 className="text-3xl font-semibold text-center mb-8 text-gray-300">
           {categories.find((cat) => cat._id === selectedTab)?.title}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -135,15 +135,15 @@ function Discuss() {
             ?.posts.map((post, index) => (
               <motion.div
                 key={index}
-                className="bg-white shadow-lg rounded-xl overflow-hidden transform transition-all duration-300 hover:shadow-2xl"
+                className="bg-gray-800 shadow-lg rounded-xl overflow-hidden transform transition-all duration-300 hover:shadow-2xl"
                 whileHover={{ y: -5 }}
               >
                 <div className="p-6">
-                  <h3 className="text-xl font-bold mb-3 text-gray-800">{post.title}</h3>
-                  <p className="text-gray-600 mb-4">{post.content.substring(0, 100)}...</p>
+                  <h3 className="text-xl font-bold mb-3 text-white">{post.title}</h3>
+                  <p className="text-gray-400 mb-4">{post.content.substring(0, 100)}...</p>
                   <button
                     onClick={() => handlePostClick(post._id, selectedTab)}
-                    className="text-indigo-600 hover:text-indigo-800 font-semibold focus:outline-none transition duration-300 ease-in-out flex items-center"
+                    className="text-indigo-400 hover:text-indigo-500 font-semibold focus:outline-none transition duration-300 ease-in-out flex items-center"
                   >
                     <FontAwesomeIcon icon={faComments} className="mr-2" />
                     Read More
@@ -160,17 +160,17 @@ function Discuss() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="bg-white rounded-lg p-8 w-full max-w-md shadow-2xl"
+            className="bg-gray-800 rounded-lg p-8 w-full max-w-md shadow-2xl"
           >
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">Add New Post</h2>
-              <button onClick={handleModalClose} className="text-gray-500 hover:text-gray-700">
+              <h2 className="text-2xl font-bold text-white">Add New Post</h2>
+              <button onClick={handleModalClose} className="text-gray-400 hover:text-gray-300">
                 <FontAwesomeIcon icon={faTimes} size="lg" />
               </button>
             </div>
             <form onSubmit={handleFormSubmit} className="space-y-6">
               <div>
-                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="title" className="block text-sm font-medium text-gray-300 mb-1">
                   Title
                 </label>
                 <input
@@ -178,20 +178,20 @@ function Discuss() {
                   id="title"
                   value={newPostTitle}
                   onChange={(e) => setNewPostTitle(e.target.value)}
-                  className="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                  className="block w-full px-4 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:ring-indigo-500 focus:border-indigo-500"
                   placeholder="Enter title..."
                   required
                 />
               </div>
               <div>
-                <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="category" className="block text-sm font-medium text-gray-300 mb-1">
                   Select Category
                 </label>
                 <select
                   id="category"
                   value={newPostCategory}
                   onChange={(e) => setNewPostCategory(e.target.value)}
-                  className="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                  className="block w-full px-4 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:ring-indigo-500 focus:border-indigo-500"
                   required
                 >
                   <option value="">Select Category</option>
@@ -203,7 +203,7 @@ function Discuss() {
                 </select>
               </div>
               <div>
-                <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="content" className="block text-sm font-medium text-gray-300 mb-1">
                   Content
                 </label>
                 <textarea
@@ -211,7 +211,7 @@ function Discuss() {
                   value={newPostContent}
                   onChange={(e) => setNewPostContent(e.target.value)}
                   rows={4}
-                  className="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                  className="block w-full px-4 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:ring-indigo-500 focus:border-indigo-500"
                   placeholder="Enter content..."
                   required
                 ></textarea>
@@ -220,7 +220,7 @@ function Discuss() {
                 <button
                   type="button"
                   onClick={handleModalClose}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                  className="px-4 py-2 border border-gray-600 rounded-md text-gray-300 bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
                   Cancel
                 </button>
