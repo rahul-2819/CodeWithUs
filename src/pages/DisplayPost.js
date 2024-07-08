@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from 'react';
 import { auth } from '../firebase-config';
 import { ClipLoader } from 'react-spinners';
@@ -22,7 +20,7 @@ function Comment({ comment, onReply, depth = 0 }) {
         }
     };
 
-    const bgColors = ['bg-white', 'bg-blue-50', 'bg-green-50', 'bg-yellow-50', 'bg-red-50', 'bg-purple-50'];
+    const bgColors = ['bg-gray-800', 'bg-gray-700', 'bg-gray-600', 'bg-gray-500', 'bg-gray-400', 'bg-gray-300'];
 
     return (
         <motion.div 
@@ -32,18 +30,18 @@ function Comment({ comment, onReply, depth = 0 }) {
             className={`${bgColors[depth % bgColors.length]} p-4 rounded-lg shadow-md mb-4`}
         >
             <div className="flex items-center mb-2">
-                <FontAwesomeIcon icon={faUser} className="text-gray-500 mr-2" />
-                <span className="font-semibold text-gray-700">User</span>
-                <FontAwesomeIcon icon={faClock} className="text-gray-500 ml-4 mr-2" />
-                <span className="text-sm text-gray-500">2 hours ago</span>
+                <FontAwesomeIcon icon={faUser} className="text-gray-300 mr-2" />
+                <span className="font-semibold text-gray-100">User</span>
+                <FontAwesomeIcon icon={faClock} className="text-gray-300 ml-4 mr-2" />
+                <span className="text-sm text-gray-400">2 hours ago</span>
             </div>
-            <p className="mb-3 text-gray-800">{comment.text}</p>
+            <p className="mb-3 text-gray-100">{comment.text}</p>
             <div className="flex items-center gap-4 text-sm">
-                <button onClick={() => setShowReply(!showReply)} className="flex items-center text-blue-600 hover:text-blue-800 transition-colors duration-200">
+                <button onClick={() => setShowReply(!showReply)} className="flex items-center text-blue-400 hover:text-blue-500 transition-colors duration-200">
                     <FontAwesomeIcon icon={faReply} className="mr-2" /> Reply
                 </button>
                 {comment.replies && comment.replies.length > 0 && (
-                    <button onClick={() => setShowReplies(!showReplies)} className="flex items-center text-green-600 hover:text-green-800 transition-colors duration-200">
+                    <button onClick={() => setShowReplies(!showReplies)} className="flex items-center text-green-400 hover:text-green-500 transition-colors duration-200">
                         <FontAwesomeIcon icon={showReplies ? faChevronUp : faChevronDown} className="mr-2" />
                         {showReplies ? 'Hide Replies' : 'Show Replies'} ({comment.replies.length})
                     </button>
@@ -63,7 +61,7 @@ function Comment({ comment, onReply, depth = 0 }) {
                                 value={replyText} 
                                 onChange={handleReplyChange} 
                                 placeholder="Write a reply"
-                                className="flex-grow p-2 border border-gray-300 rounded-l-md focus:ring-blue-500 focus:border-blue-500"
+                                className="flex-grow p-2 border border-gray-600 rounded-l-md bg-gray-700 text-white focus:ring-blue-400 focus:border-blue-400"
                             />
                             <button onClick={handleReplySubmit} className="p-2 bg-blue-600 text-white rounded-r-md hover:bg-blue-700 transition-colors duration-200">
                                 <FontAwesomeIcon icon={faPaperPlane} />
@@ -206,36 +204,36 @@ function DisplayPostWithComments() {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-screen bg-gray-100">
+            <div className="flex justify-center items-center h-screen bg-gray-900">
                 <ClipLoader size={50} color="#3B82F6" />
             </div>
         );
     }
 
     if (!postData) {
-        return <div className="text-center mt-10 text-gray-700">No post found.</div>;
+        return <div className="text-center mt-10 text-gray-400">No post found.</div>;
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-gradient-to-br from-gray-800 to-gray-900 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
                 <motion.div 
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
-                    className="bg-white rounded-xl shadow-2xl overflow-hidden mb-12"
+                    className="bg-gray-800 rounded-xl shadow-2xl overflow-hidden mb-12"
                 >
-                    <div className="bg-blue-600 p-6 text-white">
+                    <div className="bg-gray-900 p-6 text-white">
                         <h1 className="text-3xl font-bold">{postData.posts[0].title}</h1>
                         <div className="mt-2 flex items-center text-sm">
-                            <FontAwesomeIcon icon={faUser} className="mr-2" />
+                            <FontAwesomeIcon icon={faUser} className="mr-2 text-gray-400" />
                             <span>Posted by User</span>
-                            <FontAwesomeIcon icon={faClock} className="ml-4 mr-2" />
+                            <FontAwesomeIcon icon={faClock} className="ml-4 mr-2 text-gray-400" />
                             <span>3 days ago</span>
                         </div>
                     </div>
                     <div 
-                        className="prose prose-lg max-w-none p-6" 
+                        className="prose prose-lg max-w-none p-6 text-gray-300" 
                         dangerouslySetInnerHTML={{ __html: postData.posts[0].content }}
                     ></div>
                 </motion.div>
@@ -244,15 +242,15 @@ function DisplayPostWithComments() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
-                    className="bg-white rounded-xl shadow-xl p-6"
+                    className="bg-gray-800 rounded-xl shadow-xl p-6"
                 >
-                    <h2 className="text-2xl font-bold mb-6 text-gray-800">Discussion</h2>
+                    <h2 className="text-2xl font-bold mb-6 text-gray-100">Discussion</h2>
                     <div className="mb-6">
                         <textarea
                             value={newComment}
                             onChange={handleCommentChange}
                             placeholder="Add to the discussion"
-                            className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 resize-none"
+                            className="w-full p-3 border border-gray-600 rounded-md bg-gray-700 focus:ring-blue-500 focus:border-blue-500 resize-none"
                             rows="3"
                         ></textarea>
                         <button
