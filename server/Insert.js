@@ -8,7 +8,7 @@ const uri = "mongodb+srv://rahul:rahul123@demo.sieh6ij.mongodb.net/?retryWrites=
 async function fetchFromAPI() {
     try {
         // Make a GET request to the API endpoint
-        const response = await axios.get("https://alfa-leetcode-api.onrender.com/select?titleSlug=combination-sum");
+        const response = await axios.get("https://alfa-leetcode-api.onrender.com/select?titleSlug=first-missing-positive");
         
         // Return the data from the response
         return response.data;
@@ -34,7 +34,7 @@ async function insertData(data) {
         
         // Access the "ques" collection within the database
         const collection = database.collection('ques');
-        const customId = "Combination Sum"; // Replace with your desired ID
+        const customId = "First Missing Positive"; // Replace with your desired ID
         
         // Add your custom _id to the data object
         data._id = customId;
