@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Editor } from "@monaco-editor/react";
 import { auth } from "../firebase-config";
+import {getDatabase, ref, update,push,set} from "firebase/database"
 
 function CodeEditor(props) {
   const [code, setCode] = useState("");
@@ -83,6 +84,8 @@ function CodeEditor(props) {
   //   props.updateOutput(answer);
   // };
   const user = auth.currentUser;
+  const db = getDatabase();
+
   const RunAndCheck = async (Input_data) => {
     console.log(Input_data);
     const url = "https://onecompiler-apis.p.rapidapi.com/api/v1/run";
@@ -121,6 +124,7 @@ function CodeEditor(props) {
       props.updateOutput("Error" + error.message);
     }
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if(!user){
@@ -136,33 +140,65 @@ function CodeEditor(props) {
       console.log(data.testCases);
       const testcases = data.testCases;
       if(testcases !== null)
-          Execute(testcases);
+          Execute(testcases,id,"submit");
       props.setTc(data.testCases);
       // console.log(testCases);
     } catch (error) {
       console.log(error);
     }
   };
-  const Execute = async(testCases)=>{
+  const Execute = async(testCases,questionName,temp)=>{
     let answer = [];
+    let allPassed = true;
     for (let key in testCases) {
-      // console.log(testCases[key].input_data)
       const val = await RunAndCheck(testCases[key].input_data);
-      console.log(val);
-      let expected_output = val.replace(/\n|\r/g,'');
-      if (expected_output === testCases[key].expected_output) {
+      console.log("modified: " + val);
+  
+      // Normalize outputs
+      let expected_output = val.replace(/\r?\n|\r/g, '').trim();
+      let actual_output = testCases[key].expected_output.replace(/\r?\n|\r/g, '').trim();
+  
+      console.log("expected_output: " + expected_output);
+      console.log("actual_output: " + actual_output);
+  
+      if (expected_output === actual_output) {
         console.log(1);
         answer.push(true);
-        
       } else {
         console.log(0);
         answer.push(false);
+        allPassed = false;
       }
-      
     }
     setRes(answer);
-      props.updateOutput(answer);
-   
+    props.updateOutput(answer);
+    if(temp === "submit"){
+      const result = allPassed?"Accepted":"Wrong Answer";
+      saveSubmission(questionName,result);
+    }
+  }
+
+  const saveSubmission = (questionName,result)=>{
+    const userId = user.uid;
+
+    const submissionRef = ref(db,`submissions/${userId}/${questionName}`);
+    const submissionData ={
+      code,
+      time: new Date().toISOString(),
+      result
+    };
+
+    const newSubmissionRef = push(submissionRef);
+    set(newSubmissionRef,submissionData);
+
+
+    if(result === 'Accepted'){
+      const solvedQuestionRef = ref(db,`users/${user.uid}/solved_questions`);
+      update(solvedQuestionRef,{
+        [questionName] : true,
+      })
+    }
+    alert("submitted");
   }
 
   const handleRun = async (e) => {
@@ -180,7 +216,7 @@ function CodeEditor(props) {
       console.log(data.testCases);
       const testcases = data.testCases;
       if(testcases !== null)
-          Execute(testcases);
+          Execute(testcases,id,"run");
       props.setTc(data.testCases);
     } catch (error) {
       console.log(error);
