@@ -1,10 +1,8 @@
 import React from "react";
-import QuestionDesc from '../components/QuestionDesc';
 import SplitPane from 'react-split-pane';
 import CodeEditor from '../components/CodeEditor';
 import Output from "../components/Output";
 import { useState } from "react";
-import Submissions from "../components/Submissions";
 import TabSelectQuestionDesc from "../components/TabSelectQuestionDesc";
 
 function ProblemSolve(){

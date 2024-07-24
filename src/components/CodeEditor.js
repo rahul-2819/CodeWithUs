@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { Editor } from "@monaco-editor/react";
 import { auth } from "../firebase-config";
-import {getDatabase, ref, update,push,set} from "firebase/database"
+import {getDatabase, ref, update,push,set,get} from "firebase/database"
 
 function CodeEditor(props) {
   const [code, setCode] = useState("");
   const [lang, setLang] = useState("cpp");
   const [res, setRes] = useState([]);
+
+ 
 
   // -------------------------Judge0 compiler Api------------------------
   // const RunAndCheck = async (inputData, expectedOutput) => {
@@ -83,8 +85,34 @@ function CodeEditor(props) {
   //   setRes(answer);
   //   props.updateOutput(answer);
   // };
+
   const user = auth.currentUser;
   const db = getDatabase();
+
+
+  useEffect(() => {
+    const fetchCodeSnippet = async () => {
+      const questionName = localStorage.getItem("CurrentQuestionName");
+      if (questionName) {
+        const snippetRef = ref(db, `code_snippets/${questionName}`);
+        try {
+          const snapshot = await get(snippetRef);
+          if (snapshot.exists()) {
+            let fetchedCode = snapshot.val();
+            fetchedCode = fetchedCode.replace(/\\n/g, '\n');
+            console.log(fetchedCode); // Log the fetched code to verify
+            setCode(fetchedCode);
+          } else {
+            console.log("No code snippet found");
+          }
+        } catch (error) {
+          console.error("Error fetching code snippet:", error);
+        }
+      }
+    };
+
+    fetchCodeSnippet();
+  }, [db]);
 
   const RunAndCheck = async (Input_data) => {
     console.log(Input_data);
@@ -193,9 +221,9 @@ function CodeEditor(props) {
 
 
     if(result === 'Accepted'){
-      const solvedQuestionRef = ref(db,`users/${user.uid}/solved_questions`);
+      const solvedQuestionRef = ref(db,`users/${user.uid}/solved_questions/${questionName}`);
       update(solvedQuestionRef,{
-        [questionName] : true,
+        ...submissionData
       })
     }
     alert("submitted");

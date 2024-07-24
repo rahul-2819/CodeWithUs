@@ -18,9 +18,9 @@ export default function TabSelectQuestionDesc() {
             Description
             
         </div>
-        <div id = "Solution" className="pl-4 pr-4 pt-1 pb-1 border-2 hover cursor-pointer" onClick={handleClick}>
+        {/* <div id = "Solution" className="pl-4 pr-4 pt-1 pb-1 border-2 hover cursor-pointer" onClick={handleClick}>
            solution
-        </div>
+        </div> */}
         <div id = "Discuss" className="pl-4 pr-4 pt-1 pb-1 border-2 hover cursor-pointer" onClick={handleClick}>
            Discuss
         </div>
