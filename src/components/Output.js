@@ -20,7 +20,6 @@ function Output({ res, isLoading, tc }) {
         });
       });
     }
-    
   }, [res]);
 
   const toggleOutput = (index) => {
@@ -28,11 +27,11 @@ function Output({ res, isLoading, tc }) {
   };
 
   return (
-    <div className="h-80 overflow-auto">
-      <div className="border border-black-400 p-4">
+    <div className="h-full overflow-auto bg-gray-900 text-gray-300">
+      <div className="border border-gray-700 p-4">
         {isLoading && (
           <div className="flex items-center justify-center mb-4">
-            <FontAwesomeIcon icon={faSpinner} className="animate-spin mr-2 text-gray-700" />
+            <FontAwesomeIcon icon={faSpinner} className="animate-spin mr-2 text-blue-400" />
             <span className="text-xl font-semibold">Executing...</span>
           </div>
         )}
@@ -42,22 +41,22 @@ function Output({ res, isLoading, tc }) {
         {(res.length > 0 || isLoading) && (
           <>
             {res.length > 0 && res.every(result => result) ? (
-              <h2 className="text-xl font-semibold mb-4 text-green-600">Accepted</h2>
+              <h2 className="text-xl font-semibold mb-4 text-green-400">Accepted</h2>
             ) : res.length > 0 ? (
-              <h2 className="text-xl font-semibold mb-4 text-red-600">Wrong Answer</h2>
+              <h2 className="text-xl font-semibold mb-4 text-red-400">Wrong Answer</h2>
             ) : null}
             <div className="flex flex-wrap">
               {testCases.map(({ result, index }) => (
                 <div key={index} className="w-1/4 px-2 mb-4">
                   <div
-                    className={`border p-2 cursor-pointer ${expandedIndex === index ? 'bg-gray-200' : ''}`}
+                    className={`border border-gray-700 p-2 cursor-pointer ${expandedIndex === index ? 'bg-gray-800' : ''}`}
                     onClick={() => toggleOutput(index)}
                   >
                     <div className="flex items-center">
-                      <div className={`w-3 h-3 mr-2 rounded-full ${result === null ? 'bg-gray-200 animate-pulse' : (result ? 'bg-green-500' : 'bg-red-500')}`}></div>
-                      <div className={`font-semibold ${result === null ? 'text-gray-500' : (result ? 'text-green-600' : 'text-red-600')}`}>Test Case {index + 1}</div>
+                      <div className={`w-3 h-3 mr-2 rounded-full ${result === null ? 'bg-gray-600 animate-pulse' : (result ? 'bg-green-500' : 'bg-red-500')}`}></div>
+                      <div className={`font-semibold ${result === null ? 'text-gray-400' : (result ? 'text-green-400' : 'text-red-400')}`}>Test Case {index + 1}</div>
                       {result === null && (
-                        <FontAwesomeIcon icon={faSpinner} className="animate-spin ml-auto text-gray-500" />
+                        <FontAwesomeIcon icon={faSpinner} className="animate-spin ml-auto text-blue-400" />
                       )}
                     </div>
                     {expandedIndex === index && (
@@ -65,9 +64,9 @@ function Output({ res, isLoading, tc }) {
                         {result !== null && (
                           <>
                             {result ? (
-                              <span className="text-green-600">Correct</span>
+                              <span className="text-green-400">Correct</span>
                             ) : (
-                              <span className="text-red-600">Wrong Answer</span>
+                              <span className="text-red-400">Wrong Answer</span>
                             )}
                           </>
                         )}

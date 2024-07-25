@@ -22,11 +22,7 @@ function App() {
       <Route path="/" element={<Layout >
         <Home/>
       </Layout>}/>
-      {/* <Route path = "/Potd" element={
-        <Layout>
-          <Potd/>
-        </Layout>
-      } /> */}
+
       <Route path = "/login" element={
         <Layout>
           <Login/>
