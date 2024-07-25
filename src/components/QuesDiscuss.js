@@ -20,36 +20,36 @@ function Comment({ comment, onReply }) {
     };
 
     return (
-        <div style={{ marginLeft: comment.parentId ? '20px' : '0', border: '1px solid #ccc', padding: '10px', borderRadius: '5px', marginBottom: '10px', backgroundColor: '#f9f9f9' }}>
-            <p>{comment.text}</p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <button onClick={() => setShowReply(!showReply)} style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', background: 'none', border: 'none', color: '#007bff' }}>
-                    <span role="img" aria-label="reply">💬</span> Reply
+        <div style={{ marginLeft: comment.parentId ? '20px' : '0', border: '1px solid #4a5568', padding: '10px', borderRadius: '5px', marginBottom: '10px', backgroundColor: '#2d3748' }}>
+        <p style={{ color: '#e2e8f0' }}>{comment.text}</p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <button onClick={() => setShowReply(!showReply)} style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', background: 'none', border: 'none', color: '#4299e1' }}>
+                <span role="img" aria-label="reply">💬</span> Reply
+            </button>
+            {comment.replies && comment.replies.length > 0 && (
+                <button onClick={() => setShowReplies(!showReplies)} style={{ background: 'none', border: 'none', color: '#4299e1', cursor: 'pointer' }}>
+                    {showReplies ? 'Hide Replies' : 'Show Replies'} ({comment.replies.length})
                 </button>
-                {comment.replies && comment.replies.length > 0 && (
-                    <button onClick={() => setShowReplies(!showReplies)} style={{ background: 'none', border: 'none', color: '#007bff', cursor: 'pointer' }}>
-                        {showReplies ? 'Hide Replies' : 'Show Replies'} ({comment.replies.length})
-                    </button>
-                )}
-            </div>
-            {showReply && (
-                <div style={{ marginTop: '10px' }}>
-                    <input 
-                        type="text" 
-                        value={replyText} 
-                        onChange={handleReplyChange} 
-                        placeholder="Write a reply"
-                        style={{ width: '80%', padding: '5px', border: '1px solid #ccc', borderRadius: '5px', marginRight: '10px' }}
-                    />
-                    <button onClick={handleReplySubmit} style={{ padding: '5px 10px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
-                        Post
-                    </button>
-                </div>
             )}
-            {showReplies && comment.replies && comment.replies.map(reply => (
-                <Comment key={reply._id} comment={reply} onReply={onReply} />
-            ))}
         </div>
+        {showReply && (
+            <div style={{ marginTop: '10px' }}>
+                <input 
+                    type="text" 
+                    value={replyText} 
+                    onChange={handleReplyChange} 
+                    placeholder="Write a reply"
+                    style={{ width: '80%', padding: '5px', border: '1px solid #4a5568', borderRadius: '5px', marginRight: '10px', backgroundColor: '#1a202c', color: '#e2e8f0' }}
+                />
+                <button onClick={handleReplySubmit} style={{ padding: '5px 10px', background: '#4299e1', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
+                    Post
+                </button>
+            </div>
+        )}
+        {showReplies && comment.replies && comment.replies.map(reply => (
+            <Comment key={reply._id} comment={reply} onReply={onReply} />
+        ))}
+    </div>
     );
 }
 
@@ -158,7 +158,7 @@ function QuesDiscuss() {
       };
 
     return (
-        <div>
+        <div style={{ backgroundColor: '#1a202c', color: '#e2e8f0', padding: '20px' }}>
             <div className="mt-3 flex">
                 <input
                     type="text"
@@ -166,12 +166,12 @@ function QuesDiscuss() {
                     onChange={handleCommentChange}
                     placeholder="Add a comment"
                     className="flex-1 p-2 border border-gray-300 rounded-l-md"
-                    style={{ flex: '1', padding: '10px', border: '1px solid #ccc', borderRadius: '5px 0 0 5px' }}
+                    style={{ flex: '1', padding: '10px', border: '1px solid #4a5568', borderRadius: '5px 0 0 5px', backgroundColor: '#2d3748', color: '#e2e8f0' }}
                 />
                 <button
                     onClick={handleCommentSubmit}
                     className="px-4 py-2 bg-blue-500 text-white rounded-r-md hover:bg-blue-700"
-                    style={{ padding: '10px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '0 5px 5px 0', cursor: 'pointer' }}
+                    style={{ padding: '10px', background: '#4299e1', color: '#fff', border: 'none', borderRadius: '0 5px 5px 0', cursor: 'pointer' }}
                 >
                     Post
                 </button>

@@ -4,41 +4,59 @@ import Submissions from './Submissions'
 import QuesDiscuss from './QuesDiscuss';
 
 export default function TabSelectQuestionDesc() {
-    const [currentElement,setCurrentElement] = useState("Description");
-    const handleClick = (event)=>{
-        console.log(event);
-        // alert(currentElement);
+    const [currentElement, setCurrentElement] = useState("Description");
+    
+    const handleClick = (event) => {
         setCurrentElement(event.target.id);
     }
-  return (
-    <>
-    
-    <div className="flex flex-row border-2 border-black-light">
-        <div id = "Description" className="pl-4 pr-4 pt-1 pb-1 border-2 hover cursor-pointer" onClick={handleClick}>
-            Description
-            
+
+    return (
+        <div className="bg-gray-900 text-gray-300">
+            <div className="flex flex-row border-b border-gray-700">
+                <TabButton 
+                    id="Description" 
+                    currentElement={currentElement} 
+                    onClick={handleClick}
+                >
+                    Description
+                </TabButton>
+                <TabButton 
+                    id="Discuss" 
+                    currentElement={currentElement} 
+                    onClick={handleClick}
+                >
+                    Discuss
+                </TabButton>
+                <TabButton 
+                    id="Submission" 
+                    currentElement={currentElement} 
+                    onClick={handleClick}
+                >
+                    Submissions
+                </TabButton>
+            </div>
+            <div className="mt-4">
+                {currentElement === "Description" && <QuestionDesc />}
+                {currentElement === "Discuss" && <QuesDiscuss />}
+                {currentElement === "Submission" && <Submissions />}
+            </div>
         </div>
-        {/* <div id = "Solution" className="pl-4 pr-4 pt-1 pb-1 border-2 hover cursor-pointer" onClick={handleClick}>
-           solution
-        </div> */}
-        <div id = "Discuss" className="pl-4 pr-4 pt-1 pb-1 border-2 hover cursor-pointer" onClick={handleClick}>
-           Discuss
-        </div>
-        <div id = "Submission" className="pl-4 pr-4 pt-1 pb-1 border-2 hover cursor-pointer" onClick={handleClick}>
-           Submissions
-        </div>
-   
-    </div>
-    <div className={currentElement === "Description"?"":"hidden"}>
-        <QuestionDesc/>
-    </div>
-    <div className={currentElement === "Discuss"?"":"hidden"}>
-        <QuesDiscuss/>
-    </div>
-    <div className={currentElement === "Submission"?"":"hidden"}>
-      <Submissions/>
-    </div>
-    </>
-    
-  )
+    )
+}
+
+function TabButton({ id, currentElement, onClick, children }) {
+    const isActive = id === currentElement;
+    return (
+        <button 
+            id={id} 
+            className={`px-4 py-2 focus:outline-none transition-colors duration-200 ${
+                isActive 
+                    ? "bg-blue-600 text-white" 
+                    : "text-gray-400 hover:bg-gray-800"
+            }`}
+            onClick={onClick}
+        >
+            {children}
+        </button>
+    )
 }

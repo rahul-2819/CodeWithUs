@@ -257,7 +257,7 @@ function CodeEditor(props) {
   }, [res]);
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto p-6 bg-gray-900">
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center">
           <select

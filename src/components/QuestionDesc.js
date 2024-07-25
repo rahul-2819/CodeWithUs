@@ -107,103 +107,103 @@ const toggleTag=()=>{
 
 
 
-  return (
-    <div className="p-4 bg-gray-200 rounded-lg shadow-md flex-1">
-    <h2 className="text-xl font-bold mb-4"></h2>
+return (
+  <div className="bg-gray-800 shadow-lg overflow-hidden">
     {loading ? (
-      <p>Loading...</p>
+      <div className="p-4 text-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
+        <p className="mt-2 text-gray-400">Loading...</p>
+      </div>
     ) : dailyProblem ? (
       <div>
-        <h3 className="font-bold text-lg mb-2">
-          {dailyProblem.questionTitle}
-        </h3>
-        <div >
-        <p
-          className="text-gray-700 leading-relaxed"
-          dangerouslySetInnerHTML={{ __html: dailyProblem.question }}
-        ></p>
+        <div className="bg-gray-900 p-4">
+          <h3 className="font-bold text-2xl text-white">
+            {dailyProblem.questionTitle}
+          </h3>
         </div>
-        
-        <div className="flex items-center mt-4">
-          <div
-            className="flex items-center mr-4 cursor-pointer"
-            onClick={() => {
-              if (!liked) {
-                addLike(1);
-                if (disliked) {
-                  addDislike(-1);
-                  setDisliked(false);
-                }
-              } else {
-                addLike(-1);
-                setLiked(false);
-              }
-            }}
-          >
-            <FontAwesomeIcon
-              className={` ${liked ? "text-green-700" : "opacity-50"}`}
-              icon={faThumbsUp}
-            />
-            <span className="font-semibold ml-2">
-              {dailyProblem.likes}
-            </span>
+        <div className="p-4">
+          <div className="bg-gray-700 rounded-lg p-4">
+            <p
+              className="text-gray-200 leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: dailyProblem.question }}
+            ></p>
           </div>
-          <div
-            className="flex items-center cursor-pointer"
-            onClick={() => {
-              if (!disliked) {
-                addDislike(1);
-                if (liked) {
-                  addLike(-1);
-                  setLiked(false);
-                }
-              } else {
-                addDislike(-1);
-                setDisliked(false);
-              }
-            }}
-          >
-            <FontAwesomeIcon
-              className={` ${disliked ? "text-red-700" : "opacity-50"}`}
-              icon={faThumbsDown}
-            />
-            <span className="font-semibold ml-2">
-              {dailyProblem.dislikes}
-            </span>
-          </div>
-        </div>
-        <div className="mt-4 mb-4 relative bg-gray-300 border border-gray-400 rounded-md p-2">
-          <div
-            className="flex items-center cursor-pointer"
-            onClick={toggleTag}
-          >
-            <div className="mr-80">
-              <span className="font-bold">Topic Tags</span>
-            </div>
-            <div className="ml-24 ">
-              <FontAwesomeIcon icon={tags ? faCaretUp : faCaretDown} />
-            </div>
-          </div>
-          <div
-            className={`flex flex-wrap mt-2 ${tags ? "block" : "hidden"}`}
-          >
-            {dailyProblem.topicTags.map((tag) => (
-              <span
-                className="mr-2 mb-2 bg-gray-400 text-sm px-2 py-1 rounded-full"
-                key={tag.slug}
+          
+          <div className="flex items-center justify-between mt-4">
+            <div className="flex space-x-4">
+              <button
+                className={`flex items-center space-x-2 px-3 py-1 rounded-full ${
+                  liked ? "bg-green-600 text-white" : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                }`}
+                onClick={() => {
+                  if (!liked) {
+                    addLike(1);
+                    if (disliked) {
+                      addDislike(-1);
+                      setDisliked(false);
+                    }
+                  } else {
+                    addLike(-1);
+                    setLiked(false);
+                  }
+                }}
               >
-                {tag.name}
-              </span>
-            ))}
+                <FontAwesomeIcon icon={faThumbsUp} />
+                <span className="font-semibold">{dailyProblem.likes}</span>
+              </button>
+              <button
+                className={`flex items-center space-x-2 px-3 py-1 rounded-full ${
+                  disliked ? "bg-red-600 text-white" : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                }`}
+                onClick={() => {
+                  if (!disliked) {
+                    addDislike(1);
+                    if (liked) {
+                      addLike(-1);
+                      setLiked(false);
+                    }
+                  } else {
+                    addDislike(-1);
+                    setDisliked(false);
+                  }
+                }}
+              >
+                <FontAwesomeIcon icon={faThumbsDown} />
+                <span className="font-semibold">{dailyProblem.dislikes}</span>
+              </button>
+            </div>
+          </div>
+          
+          <div className="mt-4 border border-gray-600 rounded-lg overflow-hidden">
+            <div
+              className="bg-gray-700 p-3 flex justify-between items-center cursor-pointer"
+              onClick={toggleTag}
+            >
+              <span className="font-bold text-gray-200">Topic Tags</span>
+              <FontAwesomeIcon icon={tags ? faCaretUp : faCaretDown} className="text-gray-400" />
+            </div>
+            <div className={`bg-gray-800 p-3 ${tags ? "block" : "hidden"}`}>
+              <div className="flex flex-wrap -m-1">
+                {dailyProblem.topicTags.map((tag) => (
+                  <span
+                    className="m-1 bg-blue-900 text-blue-200 text-sm px-2 py-1 rounded-full"
+                    key={tag.slug}
+                  >
+                    {tag.name}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
-        <hr className="mt-4" />
       </div>
     ) : (
-      <p>No daily problem available.</p>
+      <div className="p-4 text-center text-gray-400">
+        No daily problem available.
+      </div>
     )}
   </div>
-  )
+)
 }
 
 export default QuestionDesc
