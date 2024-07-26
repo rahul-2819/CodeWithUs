@@ -89,7 +89,7 @@ function Discuss() {
   };
 
   return (
-    <div className="container mx-auto p-8 bg-gray-900 min-h-screen">
+    <div className="container mx-auto p-8 bg-gradient-to-br from-gray-900 to-blue-900 min-h-screen">
       <h1 className="text-4xl font-bold text-center mb-8 text-white">Discussion Forum</h1>
       <div className="flex justify-center space-x-4 mb-8">
         {loading ? (
