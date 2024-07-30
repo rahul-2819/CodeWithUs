@@ -79,6 +79,8 @@ function Discuss() {
         setNewPostCategory('');
         setNewPostContent('');
         setShowModal(false);
+
+        window.location.reload();
       } else {
         alert('Failed to submit post.');
       }
