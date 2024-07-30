@@ -4,12 +4,15 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { get, getDatabase, ref, update } from 'firebase/database';
 import { Doughnut } from 'react-chartjs-2';
-import { Chart as ChartJs, Tooltip,Legend, ArcElement,ChartOptions } from 'chart.js';
+import { Chart as ChartJs,Legend,Tooltip, ArcElement,ChartOptions } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels'; // Import the plugin
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaUser, FaMobileAlt, FaCode, FaEye, FaComments, FaTrophy } from 'react-icons/fa';
-
-ChartJs.register(ArcElement,Tooltip,Legend,ChartDataLabels);
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as Tooltip1, ResponsiveContainer } from 'recharts';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+ChartJs.register(ArcElement,Legend,ChartDataLabels);
 
 function ProfilePage() {
   const [user, setUser] = useState(auth.currentUser);
@@ -18,6 +21,11 @@ function ProfilePage() {
   const [editMode, setEditMode] = useState(false);
   const [selectedSubmission, setSelectedSubmission] = useState(null);
   const [newDetails, setNewDetails] = useState({ name: '', mobile: '',skills:''});
+  const [submissions,setSubmissions] = useState([]);
+  const [selectedMonth, setSelectedMonth] = useState(new Date());
+  const [dailySubmissions, setDailySubmissions] = useState([]);
+
+
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -62,6 +70,70 @@ function ProfilePage() {
     });
   };
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        const db = getDatabase();
+        const submissionRef = ref(db, 'submissions/' + currentUser.uid);
+        
+        get(submissionRef)
+          .then((snapshot) => {
+            if (snapshot.exists()) {
+              const submissionsData = snapshot.val();
+              // console.log('Submissions data structure:', JSON.stringify(submissionsData, null, 2));
+              setSubmissions(submissionsData);
+              try {
+                const processedData = processSubmissionsData(submissionsData, selectedMonth);
+                // console.log('Processed daily submissions:', processedData);
+                setDailySubmissions(processedData);
+              } catch (error) {
+                console.error('Error processing submissions data:', error);
+                setDailySubmissions([]);
+              }
+            } else {
+              console.log('No data available');
+              setDailySubmissions([]);
+            }
+          })
+          .catch((error) => {
+            console.log('Error fetching submissions:', error);
+            setDailySubmissions([]);
+          });
+      }
+    });
+  
+    return () => unsubscribe();
+  }, [selectedMonth]);
+
+  const processSubmissionsData = (submissions, month) => {
+    const start = startOfMonth(month);
+    const end = endOfMonth(month);
+    const daysInMonth = eachDayOfInterval({ start, end });
+  
+    const dailyCount = daysInMonth.map(day => {
+      let count = 0;
+      Object.entries(submissions).forEach(([questionId, questionData]) => {
+        // Check if the questionData is an object and has submissions
+        if (typeof questionData === 'object' && questionData !== null) {
+          Object.values(questionData).forEach(submission => {
+            if (submission.time) {
+              const submissionDate = new Date(submission.time);
+              if (!isNaN(submissionDate.getTime()) && 
+                  format(submissionDate, 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd')) {
+                count++;
+              }
+            }
+          });
+        }
+      });
+  
+      return { date: format(day, 'dd'), count };
+    });
+  
+    return dailyCount;
+  };
+
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -81,7 +153,7 @@ function ProfilePage() {
     datasets: [
       {
         data: [solvedQuestionsCount, totalQuestions - solvedQuestionsCount],
-        backgroundColor: ['#4caf50', '#f44336'],
+        backgroundColor: ['#81C784', '#E57373'],
         borderColor: ['#ffffff', '#ffffff'],
         borderWidth: 1,
       },
@@ -104,7 +176,7 @@ function ProfilePage() {
       },
     },
     responsive: true,
-    cutout: '70%',
+    cutout: '80%',
     maintainAspectRatio: false,
   };
 
@@ -123,6 +195,9 @@ function ProfilePage() {
   const handleSubmissionClick = (questionId, questionData) => {
     setSelectedSubmission({ questionId, ...questionData });
   };
+
+
+
 
   return (
     <div className="flex flex-col items-center bg-gradient-to-br from-gray-900 to-blue-900 min-h-screen py-10 text-white">
@@ -177,7 +252,7 @@ function ProfilePage() {
           </div>
 
           <button
-            className="mt-6 bg-red-500 text-white py-2 px-6 rounded-full w-full hover:bg-red-600 transition duration-300 transform hover:scale-105"
+            className="mt-6 bg-red-400 text-white py-2 px-6 rounded-full w-full hover:bg-red-500 transition duration-300 transform hover:scale-105"
             onClick={handleLogout}
           >
             Logout
@@ -192,17 +267,83 @@ function ProfilePage() {
           className="flex-1 p-6 flex flex-col space-y-6"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-gray-700 p-6 rounded-xl shadow-md flex flex-col items-center justify-center h-64 transition-transform duration-300 hover:scale-105">
-              <h3 className="text-xl font-semibold mb-4">Contest Rating</h3>
-              <p className="text-3xl font-bold text-yellow-400">Coming Soon</p>
-            </div>
 
-            <div className="bg-gray-700 p-6 rounded-xl shadow-md flex flex-col items-center h-64 transition-transform duration-300 hover:scale-105">
-              <h3 className="text-xl font-semibold mb-4">Solve Count</h3>
-              <div className="w-full h-48">
-                <Doughnut data={doughnutData} options={doughnutOptions} />
-              </div>
-            </div>
+                <div className="bg-gray-700 p-6 rounded-xl shadow-md flex flex-col items-center h-64 transition-transform duration-300 ">
+                  <h3 className="text-xl font-semibold mb-3">Submissions</h3>
+                  <div className="w-full flex items-center justify-between mb-4">
+                    <button 
+                      onClick={() => setSelectedMonth(prev => new Date(prev.getFullYear(), prev.getMonth() - 1))}
+                      className="text-sm bg-blue-700 px-3 py-1 rounded-full transition-colors duration-300 hover:bg-blue-600"
+                    >
+                      ← Prev
+                    </button>
+                    <span className="text-lg font-medium">{format(selectedMonth, 'MMMM yyyy')}</span>
+                    <button 
+                      onClick={() => setSelectedMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + 1))}
+                      className="text-sm bg-blue-700 px-3 py-1 rounded-full transition-colors duration-300 hover:bg-blue-600"
+                    >
+                      Next →
+                    </button>
+                  </div>
+                  <div className="w-full h-56">
+                    {dailySubmissions.length > 0 ? (
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart
+                          data={dailySubmissions}
+                          margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                        >
+                          <defs>
+                            <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
+                              <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+                          <XAxis 
+                            dataKey="date" 
+                            stroke="#999"
+                            tick={{ fill: '#999', fontSize: 12 }}
+                          />
+                          <YAxis 
+                            stroke="#999"
+                            tick={{ fill: '#999', fontSize: 12 }}
+                          />
+                          <Tooltip1
+                            contentStyle={{ backgroundColor: '#333', border: 'none', borderRadius: '8px' }}
+                            labelStyle={{ color: '#fff' }}
+                            itemStyle={{ color: '#8884d8' }}
+                          />
+                          <Area 
+                            type="monotone" 
+                            dataKey="count" 
+                            stroke="#8884d8" 
+                            fillOpacity={1} 
+                            fill="url(#colorCount)" 
+                          />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-400">
+                        No data available for this month
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="bg-gray-700 p-6 rounded-xl shadow-md flex flex-col items-center h-64 transition-transform duration-300">
+                          {/* <h3 className="text-xl font-semibold mb-4">Solve Count</h3> */}
+                          <div className="w-full">
+                            <Doughnut data={doughnutData} options={doughnutOptions} />
+                          </div>
+                          <p className="flex items-center mt-3">
+                            <span className="font-medium text-lg">{solvedQuestionsCount}</span>
+                            <span className="text-sm text-gray-300"> / 10</span>    
+                          </p>
+                          <p className="flex items-center" >
+                          <FontAwesomeIcon icon={faCheckCircle} className="text-green-500 mr-2" />
+                          Solved
+                          </p>
+                        </div>
           </div>
 
           <div className="bg-gray-700 p-6 rounded-xl shadow-md flex flex-col items-center">
@@ -213,8 +354,7 @@ function ProfilePage() {
                   {Object.entries(userData.solved_questions).map(([questionId, questionData]) => (
                     <motion.li 
                       key={questionId}
-                      whileHover={{ scale: 1.02 }}
-                      className="p-3 bg-gray-600 rounded-lg flex justify-between items-center cursor-pointer hover:bg-gray-500 transition duration-300"
+                      className="p-3 bg-gray-600 rounded-lg flex justify-between items-center cursor-pointer hover:bg-gray-500"
                       onClick={() => handleSubmissionClick(questionId, questionData)}
                     >
                       <span className="font-semibold">{questionId}</span>
