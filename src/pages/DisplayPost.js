@@ -143,7 +143,15 @@ function DisplayPostWithComments() {
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                setComments([...comments, { _id: data.commentId, text: newComment, parentId: null, userId: user.uid, replies: [] }]);
+                                // Directly add the new comment to the comments state
+                                const newCommentData = {
+                                    _id: data.commentId,
+                                    text: newComment,
+                                    parentId: null,
+                                    userId: user.uid,
+                                    replies: []
+                                };
+                                setComments(prevComments => (Array.isArray(prevComments) ? [newCommentData, ...prevComments] : [newCommentData]));
                                 setNewComment('');
                             } else {
                                 console.error('Error:', data.error);

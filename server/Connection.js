@@ -1,12 +1,16 @@
+require('dotenv').config({ path: '../.env' }); // Adjust the path to the root .env file
+
 const { MongoClient } = require('mongodb');
-//db url to connect with database
-const url ="mongodb+srv://rahul:rahul123@demo.sieh6ij.mongodb.net/?retryWrites=true&w=majority&appName=Demo";
-//creates a new client
-const client =  new MongoClient(url,{useNewUrlParser:true,useUnifiedTopology:true});
-async function connectAtlas(){
-await client.connect();
+
+const url = process.env.MONGODB_URL;
+
+const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
+
+async function connectAtlas() {
+  await client.connect();
 }
+
 module.exports = {
-    connectAtlas,
-    client
+  connectAtlas,
+  client
 };
